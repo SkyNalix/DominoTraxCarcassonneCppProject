@@ -9,10 +9,10 @@ class Tuile {
         string id;
     public :
         Tuile(vector<Bord *> bords);
-        void addBord(Bord ajout);
-        vector<Bord *> getBord();
+        void addBord(Bord *ajout);
+        vector<Bord *> getBords();
         void setAllBord(vector<Bord *> bords);
-        void setOneBord(size_t cible,Bord *bord);
+        void setOneBord(size_t cible,Bord * bord);
         string getId();
         void setId(string nouveau);
 };

@@ -11,7 +11,7 @@ ostream & operator<<(ostream &out, Bord b) {
     return out; 
 }
 
-vector<int> Bord::getValeur(){
+vector<int> Bord::getValeur() const{
     vector<int> x;
     x.push_back(-1);
     cout << "un bord " << this->face << " " << x[0] << endl;
@@ -19,7 +19,7 @@ vector<int> Bord::getValeur(){
 }
 
 Bord::~Bord(){
-    cout << "destruction d'un Bord" << endl; 
+//    cout << "destruction d'un Bord" << endl;
 }
 
 /*int main(){
