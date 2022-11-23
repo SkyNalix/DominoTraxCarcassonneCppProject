@@ -8,7 +8,7 @@ class Bord {
     public :
         string face;
         Bord(string face);
-        virtual vector<int> getValeur() const;
+        virtual vector<int> getValeurs() const;
         virtual ~Bord();
 };
 ostream & operator<<(ostream &out, Bord b);

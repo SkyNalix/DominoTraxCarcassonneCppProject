@@ -1,6 +1,6 @@
 CPP=g++ --std=c++11 -Wall
 CC= $(CPP) -c -g
-OBJECTS= main.o Bord.o BordDomino.o Tuile.o
+OBJECTS= main.o Bord.o BordDomino.o Tuile.o Terrain.o
 .SILENT: clean
 
 all : clean $(OBJECTS)
@@ -18,6 +18,9 @@ BordDomino.o: BordDomino.cpp BordDomino.hpp
 
 Tuile.o: Tuile.cpp Tuile.hpp
 	$(CC) Tuile.cpp
+
+Terrain.o: Terrain.cpp Terrain.hpp
+	$(CC) Terrain.cpp
 
 clean :
 	rm -f *.o go

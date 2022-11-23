@@ -2,9 +2,7 @@
 #define MAIN_HPP
 
 #include <iostream>
-#include "Tuile.hpp"
-#include "Bord.hpp"
-#include "BordDomino.hpp"
+#include "Terrain.hpp"
 using namespace std;
 
 #endif

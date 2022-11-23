@@ -1,20 +1,20 @@
 #ifndef TUILE
 #define TUILE
+
+#include <iostream>
 #include <vector>
 #include "Bord.hpp"
-#include <iostream>
+#include "BordDomino.hpp"
+
 class Tuile {
     private :
         vector<Bord *> bords;
         string id;
     public :
         Tuile(vector<Bord *> bords);
-        void addBord(Bord *ajout);
         vector<Bord *> getBords();
-        void setAllBord(vector<Bord *> bords);
-        void setOneBord(size_t cible,Bord * bord);
+        Bord * getBord(const string& face);
         string getId();
-        void setId(string nouveau);
 };
 ostream& operator<<(ostream &out, Tuile t);
 

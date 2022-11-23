@@ -11,7 +11,7 @@ ostream & operator<<(ostream &out, Bord b) {
     return out; 
 }
 
-vector<int> Bord::getValeur() const{
+vector<int> Bord::getValeurs() const{
     vector<int> x;
     x.push_back(-1);
     cout << "un bord " << this->face << " " << x[0] << endl;
@@ -21,16 +21,3 @@ vector<int> Bord::getValeur() const{
 Bord::~Bord(){
 //    cout << "destruction d'un Bord" << endl;
 }
-
-/*int main(){
-    //Bord *pere = vecteur[i]
-    //BordDomino *domino =  (BordDomino *) &pere;
-    
-    Bord *pere = new Bord{"face"};
-    BordDomino *enfant = new BordDomino{"enfant",1,2,3,4}; 
-    vector<Bord *> x; x.push_back(enfant);
-    Tuile tuile {x};
-    BordDomino *domino = (BordDomino *) x[0];
-
-    cout << *domino<< endl;
-} */

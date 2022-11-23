@@ -8,11 +8,7 @@ class BordDomino : public Bord {
         vector<int> valeur;
         BordDomino(string s,const vector<int>& v);
         BordDomino(string s,int a,int b,int c);
-        vector<int> getValeur() const override;
-        void setValeur(const vector<int>& valeur);
-        void setValeur(int a,int b,int c);
-        bool memeBord(BordDomino x);
-        int pointGagner(BordDomino b);
+        vector<int> getValeurs() const override;
         virtual ~BordDomino();
 };
 

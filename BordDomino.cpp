@@ -20,54 +20,13 @@ BordDomino::BordDomino(string s,int a,int b,int c) : Bord{s}, valeur{creerVector
 }
 
 
-vector<int> BordDomino::getValeur() const{
+vector<int> BordDomino::getValeurs() const{
     return this->valeur;
 }
-
-void BordDomino::setValeur(const vector<int>& v){
-    this->valeur = v;
-}
-
-void BordDomino::setValeur(int a,int b,int c){
-    this->valeur[0] = a;
-    this->valeur[1] = b;
-    this->valeur[2] = c;
-}
-
 
 ostream& operator<<(ostream& out,  BordDomino x) {
     out << "[" << x.valeur[0] << "," << x.valeur[1] << "," << x.valeur[2] << "]";
     return out;
-}
-
-bool comparaisonFace(const BordDomino& a, const BordDomino& x){
-    if(a.face == "est" && x.face != "ouest"){
-        return true;   
-    } else if(a.face == "ouest" && x.face != "est"){
-        return true;
-    } else if(a.face == "nord" && x.face != "sud"){
-        return true;
-    } else if(a.face == "sud" && x.face != "nord"){
-        return true;
-    }
-    return false;
-}
-
-bool BordDomino::memeBord(BordDomino x){
-    if(!comparaisonFace(*this, x)) {
-        return false;
-    }
-    for(size_t i =0; i < x.valeur.size();i++){
-        if(this->valeur[i] != x.valeur[i]){return false;}
-    }
-    return true;
-}
-
-int BordDomino::pointGagner(BordDomino b){
-    if(this->memeBord(b)){
-        return(this->getValeur()[0]+this->getValeur()[1]+this->getValeur()[2]);
-    }
-    return 0;
 }
 
 BordDomino::~BordDomino(){
