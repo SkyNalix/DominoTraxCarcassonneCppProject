@@ -68,21 +68,21 @@ int Terrain::tryPlaceTuile(int y, int x, Tuile *tuile) {
         Bord * bord1 = tuile->getBord("ouest");
         Bord * bord2 = getTuile(y,x-1)->getBord("est");
         if (!checkBordsValues(bord1,bord2))
-            return false;
+            return -1;
         points += calculPoints(bord1, bord2);
     }
     if( 0 < y && getTuile(y-1, x) != nullptr) {
         Bord * bord1 = tuile->getBord("nord");
         Bord * bord2 = getTuile(y-1,x)->getBord("sud");
         if (!checkBordsValues(bord1,bord2))
-            return false;
+            return -1;
         points += calculPoints(bord1, bord2);
     }
     if( y < height-1 && getTuile(y+1, x) != nullptr) {
         Bord * bord1 = tuile->getBord("sud");
         Bord * bord2 = getTuile(y+1,x)->getBord("nord");
         if (!checkBordsValues(bord1,bord2))
-            return false;
+            return -1;
         points += calculPoints(bord1, bord2);
     }
     return points;
@@ -96,3 +96,20 @@ int Terrain::placeTuile(int y, int x, Tuile* tuile) {
     return n;
 }
 
+void Terrain::draw(RenderWindow *app, int ZONE_WIDTH, int ZONE_HEIGHT) {
+    int block_width = ZONE_WIDTH/width;
+    int block_height = ZONE_HEIGHT/height;
+    for( int y = 0; y < height; y++) {
+        for( int x = 0; x < width; x++) {
+            RectangleShape rectangle(Vector2f(block_width, block_height));
+            rectangle.move(block_width*x, block_height*y );
+            Tuile * tuile = getTuile(y,x);
+            if( tuile != nullptr) {
+                tuile->draw(app, block_width*x, block_height*y, block_width, block_height);
+            } else
+            // Color color((x+1)*(y+1)*20,(x+1)*(y+1)*20,(x+1)*(y+1)*20);
+            // rectangle.setFillColor(color);
+            app->draw(rectangle);
+        }
+    }
+}
