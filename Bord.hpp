@@ -7,10 +7,9 @@ using namespace std;
 class Bord {
     public :
         string face;
-        Bord(string face);
-        virtual vector<int> getValeurs() const;
+        Bord(const string &face);
         virtual ~Bord();
 };
-ostream & operator<<(ostream &out, Bord b);
+ostream & operator<<(ostream &out, const Bord &b);
 
 #endif

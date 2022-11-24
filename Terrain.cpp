@@ -57,6 +57,8 @@ int calculPoints(Bord *bord1, Bord *bord2) {
 // return -1 si le placement a echoué, les points gagnés sinon
 int Terrain::tryPlaceTuile(int y, int x, Tuile *tuile) {
     int points = 0;
+    if( x < 0 || width <= x || y < 0 || height <= y || getTuile(y, x) != nullptr ) 
+        return -1;
     if( x < width-1 && getTuile(y, x+1) != nullptr) {
         Bord * bord1 = tuile->getBord("est");
         Bord * bord2 = getTuile(y,x+1)->getBord("ouest");
@@ -107,9 +109,20 @@ void Terrain::draw(RenderWindow *app, int ZONE_WIDTH, int ZONE_HEIGHT) {
             if( tuile != nullptr) {
                 tuile->draw(app, block_width*x, block_height*y, block_width, block_height);
             } else
-            // Color color((x+1)*(y+1)*20,(x+1)*(y+1)*20,(x+1)*(y+1)*20);
-            // rectangle.setFillColor(color);
             app->draw(rectangle);
         }
     }
 }
+
+
+ vector<vector<int>> Terrain::getPossiblePlacements(Tuile *tuile) {
+    vector<vector<int>> res{};
+    for(int i = 0 ; i < getHeight(); i++) {
+        vector<int> list{};
+        for(int j = 0; j < getWidth(); j++) {
+            list.push_back(tryPlaceTuile(i, j, tuile));
+        }
+        res.push_back(list);
+    }
+    return res;
+ }

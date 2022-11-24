@@ -2,20 +2,13 @@
 #include "Bord.hpp"
 #include "BordDomino.hpp"
 #include "Tuile.hpp"
-Bord::Bord(string f): face{f} {
+Bord::Bord(const string &face): face{face} {
 
 }
 
-ostream & operator<<(ostream &out, Bord b) {
-    out << "un Bord";
+ostream & operator<<(ostream &out, const Bord &b) {
+    out << "un Bord(" << b.face << ")";
     return out; 
-}
-
-vector<int> Bord::getValeurs() const{
-    vector<int> x;
-    x.push_back(-1);
-    cout << "un bord " << this->face << " " << x[0] << endl;
-    return x;
 }
 
 Bord::~Bord(){
