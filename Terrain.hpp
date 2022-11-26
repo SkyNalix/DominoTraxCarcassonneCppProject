@@ -23,6 +23,7 @@ class Terrain {
         int tryPlaceTuile(int y, int x, Tuile *tuile);
         void draw(RenderWindow *app, int WIDTH, int HEIGHT);
         vector<vector<int>> getPossiblePlacements(Tuile *tuile);
+        bool isEmpty();
 };
 
 #endif //TERRAIN_HPP

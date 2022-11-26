@@ -13,7 +13,10 @@ Terrain::Terrain(int height, int width) : height{height}, width{width} {
 }
 
 Tuile * Terrain::getTuile(int y, int x) const {
-    return getTerrain()[y][x];
+    if( 0<= y && y < height && 0 <= x && x < width) {
+        return getTerrain()[y][x];
+    }
+    return nullptr;
 }
 
 vector<vector<Tuile *>> Terrain::getTerrain() const {
@@ -54,33 +57,54 @@ int calculPoints(Bord *bord1, Bord *bord2) {
     return points;
 }
 
+bool Terrain::isEmpty() {
+    for(int y = 0 ; y < height; y++ ) {
+        for(int x= 0; x < width; x++) {
+            if(getTuile(y,x) != nullptr) {
+                cout << *getTuile(y,x) << endl;
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
 // return -1 si le placement a echoué, les points gagnés sinon
 int Terrain::tryPlaceTuile(int y, int x, Tuile *tuile) {
     int points = 0;
     if( x < 0 || width <= x || y < 0 || height <= y || getTuile(y, x) != nullptr ) 
         return -1;
-    if( x < width-1 && getTuile(y, x+1) != nullptr) {
+
+    if(getTuile(y, x+1) == nullptr 
+    && getTuile(y, x-1) == nullptr 
+    && getTuile(y+1, x) == nullptr 
+    && getTuile(y-1, x) == nullptr 
+    && !isEmpty() ) {
+        return -1;
+    }
+
+    if( getTuile(y, x+1) != nullptr) {
         Bord * bord1 = tuile->getBord("est");
         Bord * bord2 = getTuile(y,x+1)->getBord("ouest");
         if (!checkBordsValues(bord1,bord2))
             return -1;
         points += calculPoints(bord1, bord2);
     }
-    if( 0 < x && getTuile(y, x-1) != nullptr) {
+    if( getTuile(y, x-1) != nullptr) {
         Bord * bord1 = tuile->getBord("ouest");
         Bord * bord2 = getTuile(y,x-1)->getBord("est");
         if (!checkBordsValues(bord1,bord2))
             return -1;
         points += calculPoints(bord1, bord2);
     }
-    if( 0 < y && getTuile(y-1, x) != nullptr) {
+    if( getTuile(y-1, x) != nullptr) {
         Bord * bord1 = tuile->getBord("nord");
         Bord * bord2 = getTuile(y-1,x)->getBord("sud");
         if (!checkBordsValues(bord1,bord2))
             return -1;
         points += calculPoints(bord1, bord2);
     }
-    if( y < height-1 && getTuile(y+1, x) != nullptr) {
+    if( getTuile(y+1, x) != nullptr) {
         Bord * bord1 = tuile->getBord("sud");
         Bord * bord2 = getTuile(y+1,x)->getBord("nord");
         if (!checkBordsValues(bord1,bord2))
