@@ -61,7 +61,6 @@ bool Terrain::isEmpty() {
     for(int y = 0 ; y < height; y++ ) {
         for(int x= 0; x < width; x++) {
             if(getTuile(y,x) != nullptr) {
-                cout << *getTuile(y,x) << endl;
                 return false;
             }
         }
