@@ -23,6 +23,6 @@ class Tuile {
         void turn();
 };
 ostream& operator<<(ostream &out, const Tuile &t);
-Tuile* piocherTuileDomino();
+Tuile* getRandomTuile();
 
 #endif 

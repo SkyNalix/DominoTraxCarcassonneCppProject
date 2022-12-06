@@ -49,20 +49,11 @@ ostream &operator<<(ostream &out, const Tuile &t) {
 
 vector<vector<int>> pioches_possible{
     {1,1,1},
-    {1,1,2}, {2,1,1},
-    // {1,2,1},
-    // {1,1,3}, {3,1,1},
-    // {1,3,1},
-    // {2,1,3}, {3,1,2},
-    // {1,2,3}, {3,2,1},  
-    // {0,2,3}, {3,2,0}, 
-    // {1,1,2}, {2,1,1},   
-    // {3,0,0}, {0,0,3},
-    
+    {1,1,2}, {2,1,1}, {1,2,1},
+    {1,1,3}, {3,1,1}, {1,3,1},
 };
 
-Tuile* piocherTuileDomino() {
-    srand((unsigned) time(NULL));
+Tuile* getRandomTuile() {
     BordDomino *n = new BordDomino {"nord", pioches_possible[rand() % (pioches_possible.size())]};
     BordDomino *e = new BordDomino {"est", pioches_possible[rand() % (pioches_possible.size())]};
     BordDomino *s = new BordDomino {"sud", pioches_possible[rand() % (pioches_possible.size())]};

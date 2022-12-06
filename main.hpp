@@ -2,9 +2,7 @@
 #define MAIN_HPP
 
 #include <iostream>
-#include "Terrain.hpp"
-#include <SFML/Graphics.hpp>
-using namespace sf;
+#include "DominoCarre.hpp"
 using namespace std;
 
 #endif
