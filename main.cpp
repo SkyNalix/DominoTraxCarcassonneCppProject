@@ -2,45 +2,129 @@
 
 int main() {
 
-    BordDomino *w = new BordDomino{"nord", 1, 2, 3};
-    BordDomino *x = new BordDomino{"est", 2, 3, 4};
-    BordDomino *y = new BordDomino{"sud", 3, 4, 1};
-    BordDomino *z = new BordDomino{"ouest", 4, 1, 2};
-    Tuile tuileA = Tuile{vector <Bord *>{w,x,y,z}};
-    cout << "tuileA: " << tuileA << endl;
+    Terrain terrain{8,8};
 
-    w = new BordDomino{"nord", 1,4,1};
-    x = new BordDomino{"est", 4,1,2};
-    y = new BordDomino{"sud", 1,2,3};
-    z = new BordDomino{"ouest", 2, 3, 4};
-    Tuile tuileB = Tuile{vector <Bord *>{w,x,y,z}};
-    cout << "tuileB: " << tuileA << endl;
+    int WIDTH = 800;
+    int HEIGHT = 600;
+    Font font;
+    font.loadFromFile("./resources/arial.ttf");
 
+    Texture turn_texture;
+    turn_texture.loadFromFile("./resources/turn.jpg");
+    Sprite turn_sprite;
+    turn_sprite.setTexture(turn_texture);
+    turn_sprite.move(WIDTH-150,230);
+    turn_sprite.setScale(0.3, 0.3);
+    FloatRect turn_bounds = turn_sprite.getGlobalBounds();
 
+    Texture cross_texture;
+    cross_texture.loadFromFile("./resources/cross.jpg");
+    Sprite cross_sprite;
+    cross_sprite.setTexture(cross_texture);
+    cross_sprite.move(WIDTH-150,340);
+    cross_sprite.setScale(0.4, 0.4);
+    FloatRect cross_bounds = cross_sprite.getGlobalBounds();
 
-    Terrain terrain{4,4};
-
-    int b = terrain.placeTuile(0,0, &tuileA);
-    cout << b << endl;
-
-    b = terrain.placeTuile(0,1, &tuileB);
-    cout << b << endl;
-
-    Tuile *A = terrain.getTuile(0, 0);
-    if(A==nullptr)
-        cout << "tuile(0,0) = null" << endl;
-    else
-        cout << "tuile(0,0) = " << *A << endl;
-    A = terrain.getTuile(0, 1);
-    if(A==nullptr)
-        cout << "tuile(0,1) = null" << endl;
-    else
-        cout << "tuile(0,1) = " << *A << endl;
+    Tuile *pioche = piocherTuileDomino();
+    vector<vector<int>> possible_placements = terrain.getPossiblePlacements(pioche);
 
 
+    Text player_text;
+    player_text.setFont(font);
+    player_text.setString("Joueur 1");
+    player_text.setFillColor(Color::Black);
+    player_text.move(WIDTH-150, 6);
+    player_text.setCharacterSize(30);
 
-//    placerDomino(1,1,tuileA,terrain);
-//    cout << terrain[1][1] << endl;
+
+    int joueur = 0; // ou 1
+
+    RenderWindow app(VideoMode(WIDTH, HEIGHT, 32), "Test ");
+    while (app.isOpen()){
+        Event event;
+        while (app.pollEvent(event)){
+            switch (event.type) {
+                case Event::Closed:
+                    app.close(); break;
+                case Event::MouseButtonPressed: {
+                    if (event.mouseButton.button == sf::Mouse::Left) {
+                        Vector2f mouse = app.mapPixelToCoords(Mouse::getPosition(app));
+                        if (turn_bounds.contains(mouse) || cross_bounds.contains(mouse)) {
+                            pioche = piocherTuileDomino();
+                            possible_placements = terrain.getPossiblePlacements(pioche);
+                        }
+                        if (cross_bounds.contains(mouse)) {
+                            joueur = (joueur+1) %2;
+                            player_text.setString("Joueur " + to_string(joueur+1));
+                        }
+                        if(0 < mouse.x && mouse.x < WIDTH-200 && 0 < mouse.y && mouse.y < HEIGHT) {
+                            int block_width = (WIDTH-200)/terrain.getWidth();
+                            int block_height = HEIGHT/terrain.getHeight();
+                            int x = mouse.x / block_width;
+                            int y = mouse.y / block_height;
+                            if(0 <= x && x < terrain.getWidth() && 0 <= y && y < terrain.getHeight()) {
+                                if(possible_placements[y][x] == -1)
+                                    break;
+                                terrain.placeTuile(y,x, pioche);
+                                pioche = piocherTuileDomino();
+                                possible_placements = terrain.getPossiblePlacements(pioche);
+                                joueur = (joueur+1) %2;
+                                player_text.setString("Joueur " + to_string(joueur+1));
+                            }
+                        } 
+                    }
+                    break;
+                }
+                default: break;
+            }
+        }
+
+        app.clear();
+        app.draw(RectangleShape(Vector2f(WIDTH, HEIGHT)));
+
+        // affichage du terrain de jeu
+        terrain.draw(&app, WIDTH-200, HEIGHT);
+
+        RectangleShape line(Vector2f(5, HEIGHT));
+        line.move(WIDTH-200, 0);
+        line.setFillColor(Color(0,0,0));
+        app.draw(line);
+
+        Vector2f mouse = app.mapPixelToCoords(Mouse::getPosition(app));
+        if(0 < mouse.x && mouse.x < WIDTH-200 && 0 < mouse.y && mouse.y < HEIGHT) {
+            int block_width = (WIDTH-200)/terrain.getWidth();
+            int block_height = HEIGHT/terrain.getHeight();
+            int x = mouse.x / block_width;
+            int y = mouse.y / block_height;
+            
+            if(0 <= x && x < terrain.getWidth() && 0 <= y && y < terrain.getHeight() 
+                    && terrain.getTuile(y,x) == nullptr) {
+                RectangleShape rect(Vector2f(block_width, block_width));
+                rect.move(block_width*x, block_height*y);
+                if(possible_placements[y][x] == -1)
+                    rect.setFillColor(Color(255,0,0,128));
+                else {
+                    rect.setFillColor(Color(0,0,0,128));
+                    Text text;
+                    text.setFont(font);
+                    text.setString(to_string(possible_placements[y][x]));
+                    text.setCharacterSize(block_height*0.3);
+                    text.setFillColor(Color::Black);
+                    text.move(block_width*x+block_width/3, block_height*y+block_height/3);
+                    app.draw(text);
+                }
+                app.draw(rect);
+            }
+        }
+
+        // affichage des controlles
+        app.draw(player_text);
+        pioche->draw(&app, WIDTH-180, 60, (WIDTH-20)-(WIDTH-180), (WIDTH-20)-(WIDTH-180));
+        app.draw(turn_sprite);
+        app.draw(cross_sprite);
+
+        app.display(); 
+    }
 
     cout << "Fin Programme" << endl;
     return EXIT_SUCCESS;

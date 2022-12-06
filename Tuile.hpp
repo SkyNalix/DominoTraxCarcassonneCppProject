@@ -5,17 +5,24 @@
 #include <vector>
 #include "Bord.hpp"
 #include "BordDomino.hpp"
+#include <SFML/Graphics.hpp>
+using namespace std;
+using namespace sf;
+
 
 class Tuile {
     private :
-        vector<Bord *> bords;
+        vector<BordDomino *> bords;
         string id;
     public :
-        Tuile(vector<Bord *> bords);
-        vector<Bord *> getBords();
-        Bord * getBord(const string& face);
-        string getId();
+        Tuile(const vector<BordDomino *> &bords);
+        vector<BordDomino *> getBords() const;
+        BordDomino * getBord(const string& face) const;
+        string getId() const;
+        void draw(RenderWindow *app, int start_x, int start_y, int ZONE_WIDTH, int ZONE_HEIGHT );
+        void turn();
 };
-ostream& operator<<(ostream &out, Tuile t);
+ostream& operator<<(ostream &out, const Tuile &t);
+Tuile* piocherTuileDomino();
 
 #endif 

@@ -1,10 +1,10 @@
 CPP=g++ --std=c++11 -Wall
-CC= $(CPP) -c -g
+CC= $(CPP) -c
 OBJECTS= main.o Bord.o BordDomino.o Tuile.o Terrain.o
 .SILENT: clean
 
 all : clean $(OBJECTS)
-	$(CPP) -o go $(OBJECTS)
+	$(CPP) -o go $(OBJECTS) -lsfml-graphics -lsfml-window -lsfml-system
 	./go
 
 main.o: main.cpp main.hpp
