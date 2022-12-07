@@ -7,11 +7,6 @@ vector<BordDomino *> Tuile::getBords() const {
     return this->bords;
 }
 
-
-string Tuile::getId() const {
-    return this->id;
-}
-
 BordDomino *Tuile::getBord(const string& face) const {
     if(face=="nord")
         return bords[0];
@@ -24,28 +19,6 @@ BordDomino *Tuile::getBord(const string& face) const {
     return nullptr;
 }
 
-string afficherTuile(const Tuile &t) {
-    string str = "Tuile :" + t.getId();
-    vector<BordDomino *> bords = t.getBords();
-    for (size_t i = 0; i < bords.size(); i++) {
-        str += " bords : " + std::to_string(i);
-    }
-    return str;
-}
-
-ostream &operator<<(ostream &out, const Tuile &t) {
-    out << "Tuile : " + t.getId();
-    for (size_t i = 0; i < t.getBords().size(); i++) {
-        BordDomino bord = *((BordDomino *) t.getBords()[i]);
-        if(bord.face == "vide")
-            out << "BordDomino(vide)";
-        else
-            out << "BordDomino(" << bord.face << ") : " << bord ;
-        if(i < t.getBords().size()-1)
-            out << "; ";
-    }
-    return out;
-}
 
 vector<vector<int>> pioches_possible{
     {1,1,1},
@@ -119,21 +92,6 @@ void Tuile::draw(RenderWindow *app, int start_x, int start_y, int ZONE_WIDTH, in
                 domino_start_y += square_height + (j*domino_height);
             }
             
-
-            BordDomino bord = *((BordDomino *) bords[i]);
-            Font font;
-            font.loadFromFile("./resources/arial.ttf");
-            Text text;
-            text.setFont(font);
-            text.setString(to_string(bord.getValeurs()[j]));
-            text.setCharacterSize(domino_height*0.8);
-            text.setFillColor(Color::Black);
-            if(i==0 || i== 2)
-                text.move(domino_start_x +(domino_width/5),domino_start_y);
-            else
-                text.move(domino_start_x +(domino_width/3),domino_start_y);
-
-
             if( j < 2 ) {
                 RectangleShape line;
                 if(i==0 || i==2) {
@@ -146,7 +104,19 @@ void Tuile::draw(RenderWindow *app, int start_x, int start_y, int ZONE_WIDTH, in
                 line.setFillColor(Color::Black);
                 app->draw(line);
             }
-        
+            
+            BordDomino bord = *((BordDomino *) bords[i]);
+            Font font;
+            font.loadFromFile("./resources/arial.ttf");
+            Text text;
+            text.setFont(font);
+            text.setString(to_string(bord.getValeurs()[j]));
+            text.setCharacterSize(domino_height*0.8);
+            text.setFillColor(Color::Black);
+            if(i==0 || i== 2)
+                text.move(domino_start_x +(domino_width/5),domino_start_y);
+            else
+                text.move(domino_start_x +(domino_width/3),domino_start_y);
             app->draw(text);
         }
     }

@@ -11,7 +11,6 @@ class BordDomino : public Bord {
         BordDomino(const string &s,int a,int b,int c);
         vector<int> getValeurs() const;
         void setValeurs(const vector<int> &v);
-        virtual ~BordDomino();
 };
 
 ostream& operator<<(ostream &out, const BordDomino &b);

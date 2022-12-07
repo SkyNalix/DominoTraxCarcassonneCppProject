@@ -9,6 +9,8 @@ DominoCarre::DominoCarre(int h, int w) {
         width = w;
     }
     bag = (height*width)*0.75;
+    if(bag % 2 == 1)
+        bag++;
 }
 
 void DominoCarre::start() {

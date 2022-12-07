@@ -28,10 +28,6 @@ ostream& operator<<(ostream& out, const BordDomino &x) {
     return out;
 }
 
-BordDomino::~BordDomino(){
-//    cout << "destruction d'un bordDomino" << endl;
-}
-
 void BordDomino::setValeurs(const vector<int> &v) {
     valeurs = v;
 }
