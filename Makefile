@@ -1,29 +1,24 @@
-CPP=g++ --std=c++11 -Wall
-CC= $(CPP) -c
-OBJECTS= main.o DominoCarre.o Bord.o BordDomino.o Tuile.o Terrain.o
-.SILENT: clean
+SRC_DIRS :=  src/DominoCarre src
+# ajouter les repertoires ici ^ 
 
-all : clean $(OBJECTS)
-	$(CPP) -o go $(OBJECTS) -lsfml-graphics -lsfml-window -lsfml-system
-	./go
+.SILENT:
+CPP_FILES = $(foreach dir, $(SRC_DIRS), $(wildcard $(dir)/*.cpp))
+OBJECTS := $(patsubst %.cpp,%.o,$(CPP_FILES))
+OBJECTS_IN_OBJ_DIR = $(addprefix obj/, $(notdir $(OBJECTS)))
+OBJ_DIR = ./obj
 
-main.o: main.cpp main.hpp
-	$(CC) main.cpp
+CPP = g++ --std=c++11 -Wall
+SFML_ARGS = -lsfml-graphics -lsfml-window -lsfml-system
+EXE_NAME = go
 
-DominoCarre.o: DominoCarre.cpp DominoCarre.hpp
-	$(CC) DominoCarre.cpp
+all: $(OBJECTS)
+	$(CPP) -o $(EXE_NAME) $(OBJECTS_IN_OBJ_DIR) $(SFML_ARGS)
+	echo "Lancez avec ./$(EXE_NAME)"
 
-Bord.o: Bord.cpp Bord.hpp
-	$(CC) Bord.cpp
+%.o: %.cpp %.hpp
+	mkdir -p $(OBJ_DIR)
+	$(CPP) $(addprefix -I,$(SRC_DIRS)) -c $*.cpp -o $(OBJ_DIR)/$(notdir $@)
 
-BordDomino.o: BordDomino.cpp BordDomino.hpp
-	$(CC) BordDomino.cpp
-
-Tuile.o: Tuile.cpp Tuile.hpp
-	$(CC) Tuile.cpp
-
-Terrain.o: Terrain.cpp Terrain.hpp
-	$(CC) Terrain.cpp
 
 clean :
-	rm -f *.o go
+	rm -rf $(EXE_NAME) $(OBJ_DIR) 
