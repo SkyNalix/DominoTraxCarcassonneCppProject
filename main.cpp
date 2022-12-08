@@ -1,7 +1,10 @@
 #include "main.hpp"
 
-int main() {
+void openMenuPrincipal();
 
+void openDomino(){
+    
+    
     Terrain terrain{8,8};
 
     int WIDTH = 800;
@@ -24,6 +27,15 @@ int main() {
     cross_sprite.move(WIDTH-150,340);
     cross_sprite.setScale(0.4, 0.4);
     FloatRect cross_bounds = cross_sprite.getGlobalBounds();
+
+    Texture retour_texture;
+    retour_texture.loadFromFile("./resources/Retour.jpg");
+    Sprite retour_sprite;
+    retour_sprite.setTexture(retour_texture);
+    retour_sprite.move(WIDTH-150,460);
+    retour_sprite.setScale(1.5,1.5);
+    FloatRect retour_bounds = retour_sprite.getGlobalBounds();
+
 
     Tuile *pioche = piocherTuileDomino();
     vector<vector<int>> possible_placements = terrain.getPossiblePlacements(pioche);
@@ -49,6 +61,10 @@ int main() {
                 case Event::MouseButtonPressed: {
                     if (event.mouseButton.button == sf::Mouse::Left) {
                         Vector2f mouse = app.mapPixelToCoords(Mouse::getPosition(app));
+                        if(retour_bounds.contains(mouse)){
+                            app.close();
+                            openMenuPrincipal();
+                        }
                         if (turn_bounds.contains(mouse) || cross_bounds.contains(mouse)) {
                             pioche = piocherTuileDomino();
                             possible_placements = terrain.getPossiblePlacements(pioche);
@@ -122,10 +138,74 @@ int main() {
         pioche->draw(&app, WIDTH-180, 60, (WIDTH-20)-(WIDTH-180), (WIDTH-20)-(WIDTH-180));
         app.draw(turn_sprite);
         app.draw(cross_sprite);
+        app.draw(retour_sprite);
 
         app.display(); 
     }
 
     cout << "Fin Programme" << endl;
+}
+
+
+
+void openMenuPrincipal(){
+    int WIDTH = 800;
+    int HEIGHT = 600;
+
+    Font font;
+    font.loadFromFile("./resources/arial.ttf");
+    Text text;
+    text.setFont(font);
+    text.setString(" Menu ");
+    text.setCharacterSize(50);
+    text.setFillColor(Color::Red);
+
+
+    Texture texture;
+    texture.loadFromFile("./resources/Domino.jpg");
+    Sprite menuDomino;
+    menuDomino.setTexture(texture);
+    menuDomino.setScale(Vector2f(2.5,2.5));
+    menuDomino.move(Vector2f(25, 125));
+    FloatRect domino_bounds = menuDomino.getGlobalBounds(); 
+
+    Texture texture2;
+    texture2.loadFromFile("./resources/Trax.jpg");
+    Sprite menuTrax;
+    menuTrax.setTexture(texture2);
+    menuTrax.setScale(Vector2f(2.5,2.5));
+    menuTrax.move(Vector2f(25, 325));
+    FloatRect trax_bounds = menuTrax.getGlobalBounds(); 
+
+
+    RenderWindow app(VideoMode(800, 600, 32), "Projet 2022 CPP ");
+    while (app.isOpen()){
+        Event event;
+        while (app.pollEvent(event)){
+            switch (event.type) {
+                case Event::Closed:
+                app.close(); break;
+                default: break;
+                case Event::MouseButtonPressed: {
+                if (event.mouseButton.button == sf::Mouse::Left) {
+                        Vector2f mouse = app.mapPixelToCoords(Mouse::getPosition(app));
+                        if (domino_bounds.contains(mouse)) {
+                            app.close();
+                            openDomino();
+                        }
+                    }
+                }
+        }}
+        app.clear(); 
+        app.draw(text);
+        app.draw(menuDomino);
+        app.draw(menuTrax);
+        app.display(); 
+    } 
+}
+
+
+int main() {
+    openMenuPrincipal();
     return EXIT_SUCCESS;
 }
