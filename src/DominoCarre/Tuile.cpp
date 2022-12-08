@@ -1,13 +1,13 @@
 #include "Tuile.hpp"
-#include "BordDomino.hpp"
+#include "Bord.hpp"
 
-Tuile::Tuile(const vector<BordDomino *> &bords) : bords{bords} {}
+Tuile::Tuile(const vector<Bord<vector<int>>> &bords) : bords{bords} {}
 
-vector<BordDomino *> Tuile::getBords() const {
+vector<Bord<vector<int>>> Tuile::getBords() const {
     return this->bords;
 }
 
-BordDomino *Tuile::getBord(const string& face) const {
+Bord<vector<int>> Tuile::getBord(const string& face) const {
     if(face=="nord")
         return bords[0];
     if(face=="est")
@@ -16,7 +16,7 @@ BordDomino *Tuile::getBord(const string& face) const {
         return bords[2];
     if(face=="ouest")
         return bords[3];
-    return nullptr;
+    throw invalid_argument("invalid face");
 }
 
 
@@ -27,11 +27,13 @@ vector<vector<int>> pioches_possible{
 };
 
 Tuile* getRandomTuile() {
-    BordDomino *n = new BordDomino {"nord", pioches_possible[rand() % (pioches_possible.size())]};
-    BordDomino *e = new BordDomino {"est", pioches_possible[rand() % (pioches_possible.size())]};
-    BordDomino *s = new BordDomino {"sud", pioches_possible[rand() % (pioches_possible.size())]};
-    BordDomino *o = new BordDomino {"ouest", pioches_possible[rand() % (pioches_possible.size())]};
-    return new Tuile{vector<BordDomino *> {n,e,s,o} };
+    vector<Bord<vector<int>>> bords{};
+    for(int i = 0; i < 4; i++) {
+        vector<int> list = pioches_possible[rand() % pioches_possible.size()];
+        Bord<vector<int>> bord {list};
+        bords.push_back(bord);
+    }
+    return new Tuile{bords};
 }
 
 
@@ -105,12 +107,12 @@ void Tuile::draw(RenderWindow *app, int start_x, int start_y, int ZONE_WIDTH, in
                 app->draw(line);
             }
             
-            BordDomino bord = *((BordDomino *) bords[i]);
+            Bord<vector<int>> bord = bords[i];
             Font font;
             font.loadFromFile("./resources/arial.ttf");
             Text text;
             text.setFont(font);
-            text.setString(to_string(bord.getValeurs()[j]));
+            text.setString(to_string(bord.x[j]));
             text.setCharacterSize(domino_height*0.8);
             text.setFillColor(Color::Black);
             if(i==0 || i== 2)
@@ -134,9 +136,9 @@ vector<int> invert_vector(vector<int> v) {
 } 
 
 void Tuile::turn() {
-    vector<int> tmp = bords[3]->getValeurs();
-    bords[3]->setValeurs(bords[2]->getValeurs());
-    bords[2]->setValeurs(invert_vector(bords[1]->getValeurs()));
-    bords[1]->setValeurs(bords[0]->getValeurs());
-    bords[0]->setValeurs(invert_vector(tmp));;
+    vector<int> tmp = bords[3].x;
+    bords[3].x = bords[2].x;
+    bords[2].x = invert_vector(bords[1].x);
+    bords[1].x = bords[0].x;
+    bords[0].x = invert_vector(tmp);
 }

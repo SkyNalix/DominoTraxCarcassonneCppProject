@@ -1,15 +1,17 @@
-#ifndef BORD
-#define BORD
+#ifndef BORD_HPP
+#define BORD_HPP
+
 #include<iostream>
-#include <vector>
 using namespace std;
 
-class Bord {
+template <typename T> class Bord {
     public :
-        string face;
-        Bord(const string &face);
-        virtual ~Bord();
+        T x;
+        Bord<T>(T a);
 };
-ostream & operator<<(ostream &out, const Bord &b);
+
+template < typename T> Bord<T>::Bord(T a): x{a} {
+
+}
 
 #endif

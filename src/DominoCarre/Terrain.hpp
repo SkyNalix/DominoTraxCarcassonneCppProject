@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include "Tuile.hpp"
-#include "BordDomino.hpp"
+#include "Bord.hpp"
 #include <SFML/Graphics.hpp>
 using namespace std;
 using namespace sf;
