@@ -12,7 +12,7 @@ OBJECTS_IN_OBJ_DIR = $(addprefix $(OBJ_DIR)/, $(notdir $(OBJECTS)))
 CPP = g++ --std=c++11 -Wall
 SFML_ARGS = -lsfml-graphics -lsfml-window -lsfml-system
 
-all: init $(OBJECTS)
+all: clean init $(OBJECTS)
 	$(CPP) -o $(EXE_NAME) $(OBJECTS_IN_OBJ_DIR) $(SFML_ARGS)
 	echo "Lancez avec ./$(EXE_NAME)"
 

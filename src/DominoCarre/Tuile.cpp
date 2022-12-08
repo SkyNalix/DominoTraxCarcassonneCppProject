@@ -22,8 +22,8 @@ Bord<vector<int>> Tuile::getBord(const string& face) const {
 
 vector<vector<int>> pioches_possible{
     {1,1,1},
-    {1,1,2}, {2,1,1}, {1,2,1},
-    {1,1,3}, {3,1,1}, {1,3,1},
+    {1,1,2}, {2,1,1}, {1,2,1}, {2,2,1}, {1,2,2}, {2,1,2},
+    {1,1,3}, {3,1,1}, {1,3,1}, {3,3,1}, {1,3,3}, {3,1,3}
 };
 
 Tuile* getRandomTuile() {
