@@ -91,6 +91,7 @@ void DominoCarre::start() {
                                 victory = true;
                             } else {
                                 pick = getRandomTuile();
+                                possible_placements = terrain.getPossiblePlacements(pick);
                                 bag--;
                                 bag_text.setString("bag size = " + to_string(bag));
                             }
