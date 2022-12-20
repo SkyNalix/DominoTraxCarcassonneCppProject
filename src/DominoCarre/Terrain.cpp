@@ -68,7 +68,7 @@ bool Terrain::isEmpty() {
     return true;
 }
 
-// return -1 si le placement a echoué, les points gagnés sinon
+// return -1 si le placement a echoué, les points gagnes sinon
 int Terrain::tryPlaceTuile(int y, int x, Tuile *tuile) {
     int points = 0;
     if( x < 0 || width <= x || y < 0 || height <= y || getTuile(y, x) != nullptr ) 
@@ -131,11 +131,117 @@ void Terrain::draw(RenderWindow *app, int ZONE_WIDTH, int ZONE_HEIGHT) {
             Tuile * tuile = getTuile(y,x);
             if( tuile != nullptr) {
                 tuile->draw(app, block_width*x, block_height*y, block_width, block_height);
-            } else
-            app->draw(rectangle);
+            } 
+            // else
+            //     app->draw(rectangle);
         }
     }
 }
+
+
+bool Terrain::propage(int x,int y){ 
+    Tuile *actuel = this->getTuile(y,x);
+    bool check = false;
+
+    for(int i = 0; i < this->getHeight();i++){
+        if(this->getTuile(i,0) != nullptr){
+            // check = allerDroite(this,i,0);
+        }
+    }
+    return check;
+}
+
+
+// bool allerDroite(Terrain *terrain,int x,int y){
+//     Tuile *tuile = terrain->getTuile(y,x);
+//     bool check = false;
+
+//     if(y == terrain->getHeight()){return true;} // si on arrive au dernier alors tout se suit
+//     if(tuile->getBord("est").x[0] == 0 && terrain->getTuile(y,x+1)->getBord("ouest").x[0] == 0 ){ // chemin vers la droite
+//         check = allerDroite(terrain,x+1,y);
+//         return check;  
+//     } else if(tuile->getBord("nord").x[0] == 0 && terrain->getTuile(y,x+1)->getBord("sud").x[0] == 0 ){ // on va vers le haut
+//         check = allerHaut(terrain,x,y-1);
+//         return check;  
+//     }  else if(tuile->getBord("sud").x[0] == 0 && terrain->getTuile(y,x+1)->getBord("nord").x[0] == 0 ){
+//        check = allerBas(terrain,x,y+1);   
+//        return check;
+//     }
+
+//     return false;
+// }
+
+// bool allerGauche(Terrain *terrain,int x,int y){
+//     Tuile *tuile = terrain->getTuile(y,x);
+//     bool check = false;
+
+//     if(y == 0 ){return true;} // si on arrive au dernier alors tout se suit
+//     if(tuile->getBord("ouest").x[0] == 0 && terrain->getTuile(y,x+1)->getBord("est").x[0] == 0 ){ // chemin vers la droite
+//         check = allerGauche(terrain,x-1,y);
+//         return check;  
+//     } else if(tuile->getBord("nord").x[0] == 0 && terrain->getTuile(y,x+1)->getBord("sud").x[0] == 0 ){ // on va vers le haut
+//         check = allerHaut(terrain,x,y-1);
+//         return check;  
+//     }  else if(tuile->getBord("sud").x[0] == 0 && terrain->getTuile(y,x+1)->getBord("nord").x[0] == 0 ){
+//        check = allerBas(terrain,x,y+1);  
+//        return check;
+//     }
+//     return false;
+// }
+
+// bool allerBas(Terrain *terrain,int x,int y){ // x = ligne y = colonne ? 
+//     Tuile *tuile = terrain->getTuile(y,x);
+//     bool check = false;
+
+//     if(y == terrain->getWidth()){return true;} // si on arrive au dernier alors tout se suit
+//     if(tuile->getBord("ouest").x[0] == 0 && terrain->getTuile(y,x+1)->getBord("est").x[0] == 0 ){ // chemin vers la droite
+//         check = allerGauche(terrain,x-1,y);
+//         return check;  
+//     } else if(tuile->getBord("est").x[0] == 0 && terrain->getTuile(y,x+1)->getBord("ouest").x[0] == 0 ){ // on va vers le haut
+//         check = allerDroite(terrain,x+1,y);
+//         return check;  
+//     } else if(tuile->getBord("sud").x[0] == 0 && terrain->getTuile(y,x+1)->getBord("nord").x[0] == 0 ){
+//        check = allerBas(terrain,x,y+1);   
+//         return check;
+//     }
+//     return false;
+// }
+
+
+// bool allerHaut(Terrain *terrain,int x,int y){
+//     Tuile *tuile = terrain->getTuile(y,x);
+//     bool check = false;
+
+//     if(y == 0){return true;} // si on arrive au dernier alors tout se suit
+//     if(tuile->getBord("ouest").x[0] == 0 && terrain->getTuile(y,x+1)->getBord("est").x[0] == 0 ){ // chemin vers la droite
+//         check = allerGauche(terrain,x-1,y);
+//         return check;  
+//     } else if(tuile->getBord("est").x[0] == 0 && terrain->getTuile(y,x+1)->getBord("ouest").x[0] == 0 ){ // on va vers le haut
+//         check = allerDroite(terrain,x+1,y);
+//         return check;  
+//     } else if(tuile->getBord("nord").x[0] == 0 && terrain->getTuile(y,x+1)->getBord("sud").x[0] == 0 ){
+//        check = allerHaut(terrain,x,y-1);   
+//         return check;
+//     }
+//     return false;
+// }
+
+
+
+void Terrain::drawTrax(RenderWindow *app, int ZONE_WIDTH, int ZONE_HEIGHT,Sprite sprite){
+    int block_width = ZONE_WIDTH/width;
+    int block_height = ZONE_HEIGHT/height;
+    for( int y = 0; y < height; y++) {
+        for( int x = 0; x < width; x++) {
+            Tuile * tuile = getTuile(y,x);
+
+            
+            if( tuile != nullptr) {
+                    tuile->drawTrax(app, block_width*x, block_height*y, block_width, block_height,sprite);
+            } else { tuile->drawTrax(app, block_width*x, block_height*y, block_width, block_height,sprite); }
+        }
+    }
+} 
 
 
  vector<vector<int>> Terrain::getPossiblePlacements(Tuile *tuile) {

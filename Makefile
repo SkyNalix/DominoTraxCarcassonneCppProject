@@ -1,4 +1,4 @@
-SRC_DIRS := src/common src/DominoCarre src
+SRC_DIRS := src/common src/DominoCarre src/Trax src
 # ajouter les repertoires ici ^ 
 
 .SILENT:

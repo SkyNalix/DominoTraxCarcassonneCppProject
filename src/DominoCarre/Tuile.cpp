@@ -1,5 +1,6 @@
 #include "Tuile.hpp"
-#include "Bord.hpp"
+// #include "Bord.hpp"
+#include "common/Bord.hpp"
 
 Tuile::Tuile(const vector<Bord<vector<int>>> &bords) : bords{bords} {}
 
@@ -37,6 +38,30 @@ Tuile* getRandomTuile() {
 }
 
 
+Tuile* getRandomTuileTrax(){
+    vector<Bord<vector<int>>> bords{};
+
+    vector<int> blanc = {0,0,0}; 
+    vector<int> rouge = {1,1,1}; 
+
+    int random = rand() % 2;
+    if(random == 0){ // blanc rouge blanc rouge   
+       bords.push_back(blanc);
+       bords.push_back(rouge);
+       bords.push_back(blanc);
+       bords.push_back(rouge);  
+       cout << "lÃ " << endl;  
+    } else if(random == 1){ // blanc blanc rouge rouge
+       bords.push_back(blanc);
+       bords.push_back(blanc);
+       bords.push_back(rouge);
+       bords.push_back(rouge);
+       cout << "ici" << endl;    
+    }
+    return new Tuile{bords};
+}
+
+
 void Tuile::draw(RenderWindow *app, int start_x, int start_y, int ZONE_WIDTH, int ZONE_HEIGHT ) {
 
     RectangleShape rectangle(Vector2f(ZONE_WIDTH, ZONE_HEIGHT));
@@ -60,7 +85,7 @@ void Tuile::draw(RenderWindow *app, int start_x, int start_y, int ZONE_WIDTH, in
         app->draw(rectangle2);
     }
 
-    // le grand carré du centre
+    // le grand carrÃ© du centre
     RectangleShape square(Vector2f(square_width*2, square_height*2));
     square.move(start_x+square_width, start_y+square_height);
     square.setOutlineThickness(2);
@@ -123,6 +148,16 @@ void Tuile::draw(RenderWindow *app, int start_x, int start_y, int ZONE_WIDTH, in
         }
     }
 
+}
+
+
+void Tuile::drawTrax(RenderWindow *app, int start_x, int start_y, int ZONE_WIDTH, int ZONE_HEIGHT ,Sprite sprite){
+    Texture texture; texture.loadFromFile("./resources/TraxBlancBlancRougeRouge.png");
+    sprite.setTexture(texture);
+    sprite.setScale(0.05,0.05);
+    sprite.move(ZONE_WIDTH,ZONE_HEIGHT);
+    app->draw(sprite);
+    app->display();
 }
 
 vector<int> invert_vector(vector<int> v) {

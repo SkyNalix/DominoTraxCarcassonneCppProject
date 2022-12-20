@@ -22,7 +22,9 @@ class Terrain {
         int getWidth() const;
         int tryPlaceTuile(int y, int x, Tuile *tuile);
         void draw(RenderWindow *app, int WIDTH, int HEIGHT);
+        void drawTrax(RenderWindow *app, int WIDTH, int HEIGHT,Sprite sprite);
         vector<vector<int>> getPossiblePlacements(Tuile *tuile);
+        bool propage(int x,int y);
         bool isEmpty();
 };
 

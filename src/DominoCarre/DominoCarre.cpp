@@ -1,6 +1,9 @@
 #include "DominoCarre.hpp"
+#include "Main.hpp"
+#include "unistd.h"
 
 DominoCarre::DominoCarre(int h, int w) {
+    
     if(h <= 1 && w <= 1 ) {
         height = 5;
         width = 5;
@@ -19,7 +22,7 @@ void DominoCarre::start() {
     bool victory = false;
 
     int DRAW_WIDTH = 800;
-    int DRAW_HEIGHT = 600;
+    int DRAW_HEIGHT = 700;
     int controller_start_x = DRAW_WIDTH*0.75;
     int controller_width = DRAW_WIDTH*0.25;
                             int block_width = controller_start_x/terrain.getWidth();
@@ -42,6 +45,15 @@ void DominoCarre::start() {
     cross_sprite.setScale(0.4, 0.4);
     cross_sprite.move(controller_start_x+(controller_width*0.25),430);
     FloatRect cross_bounds = cross_sprite.getGlobalBounds();
+
+    Texture retour_texture;
+    retour_texture.loadFromFile("./resources/Retour.jpg");
+    Sprite retour_sprite;
+    retour_sprite.setTexture(retour_texture);
+    retour_sprite.setScale(1.5,1.5);
+    retour_sprite.move(controller_start_x+(controller_width*0.25),620);
+    FloatRect retour_bounds = retour_sprite.getGlobalBounds();
+
 
     Tuile *pick = getRandomTuile();
     bag--;
@@ -80,6 +92,10 @@ void DominoCarre::start() {
                 case Event::MouseButtonPressed: {
                     if (!victory && event.mouseButton.button == sf::Mouse::Left) {
                         Vector2f mouse = app.mapPixelToCoords(Mouse::getPosition(app));
+                        if(retour_bounds.contains(mouse)){
+                            app.close();
+                            Main::openMenuPrincipal();
+                        }
                         if (turn_bounds.contains(mouse) || cross_bounds.contains(mouse)) {
                             pick->turn();
                             possible_placements = terrain.getPossiblePlacements(pick);
@@ -158,6 +174,7 @@ void DominoCarre::start() {
         app.draw(turn_sprite);
         app.draw(cross_sprite);
         app.draw(score_text);
+        app.draw(retour_sprite);
         app.draw(bag_text);
 
         // affichage de l'aide au placement
@@ -203,8 +220,12 @@ void DominoCarre::start() {
             text.setFillColor(Color::Black);
             text.move(controller_start_x*0.3, DRAW_HEIGHT*0.44);
             app.draw(text);
+            app.display();
+            sleep(5);
+            app.close();
+            Main::openMenuPrincipal();
         }
 
-        app.display(); 
+        app.display();
     }
 }
