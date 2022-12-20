@@ -9,7 +9,7 @@ CPP_FILES = $(foreach dir, $(SRC_DIRS), $(wildcard $(dir)/*.cpp))
 OBJECTS := $(patsubst %.cpp,%.o,$(CPP_FILES))
 OBJECTS_IN_OBJ_DIR = $(addprefix $(OBJ_DIR)/, $(notdir $(OBJECTS)))
 
-CPP = g++ --std=c++11 -Wall
+CPP = g++ --std=c++11 -Wall -MD
 SFML_ARGS = -lsfml-graphics -lsfml-window -lsfml-system
 
 all: clean init $(OBJECTS)

@@ -1,25 +1,10 @@
-#include "Tuile.hpp"
-// #include "Bord.hpp"
+#include "TuileDomino.hpp"
 #include "common/Bord.hpp"
 
-Tuile::Tuile(const vector<Bord<vector<int>>> &bords) : bords{bords} {}
 
-vector<Bord<vector<int>>> Tuile::getBords() const {
-    return this->bords;
-}
 
-Bord<vector<int>> Tuile::getBord(const string& face) const {
-    if(face=="nord")
-        return bords[0];
-    if(face=="est")
-        return bords[1];
-    if(face=="sud")
-        return bords[2];
-    if(face=="ouest")
-        return bords[3];
-    throw invalid_argument("invalid face");
-}
 
+TuileDomino::TuileDomino(const vector<Bord<vector<int>>> &bords) : bords{bords} {}
 
 vector<vector<int>> pioches_possible{
     {1,1,1},
@@ -27,42 +12,18 @@ vector<vector<int>> pioches_possible{
     {1,1,3}, {3,1,1}, {1,3,1}, {3,3,1}, {1,3,3}, {3,1,3}
 };
 
-Tuile* getRandomTuile() {
+TuileDomino* getRandomTuileDomino() {
     vector<Bord<vector<int>>> bords{};
     for(int i = 0; i < 4; i++) {
         vector<int> list = pioches_possible[rand() % pioches_possible.size()];
         Bord<vector<int>> bord {list};
         bords.push_back(bord);
     }
-    return new Tuile{bords};
+    return new TuileDomino{bords};
 }
 
 
-Tuile* getRandomTuileTrax(){
-    vector<Bord<vector<int>>> bords{};
-
-    vector<int> blanc = {0,0,0}; 
-    vector<int> rouge = {1,1,1}; 
-
-    int random = rand() % 2;
-    if(random == 0){ // blanc rouge blanc rouge   
-       bords.push_back(blanc);
-       bords.push_back(rouge);
-       bords.push_back(blanc);
-       bords.push_back(rouge);  
-       cout << "lÃ " << endl;  
-    } else if(random == 1){ // blanc blanc rouge rouge
-       bords.push_back(blanc);
-       bords.push_back(blanc);
-       bords.push_back(rouge);
-       bords.push_back(rouge);
-       cout << "ici" << endl;    
-    }
-    return new Tuile{bords};
-}
-
-
-void Tuile::draw(RenderWindow *app, int start_x, int start_y, int ZONE_WIDTH, int ZONE_HEIGHT ) {
+void TuileDomino::draw(RenderWindow *app, int start_x, int start_y, int ZONE_WIDTH, int ZONE_HEIGHT ) {
 
     RectangleShape rectangle(Vector2f(ZONE_WIDTH, ZONE_HEIGHT));
     rectangle.move(start_x, start_y);
@@ -151,26 +112,18 @@ void Tuile::draw(RenderWindow *app, int start_x, int start_y, int ZONE_WIDTH, in
 }
 
 
-void Tuile::drawTrax(RenderWindow *app, int start_x, int start_y, int ZONE_WIDTH, int ZONE_HEIGHT ,Sprite sprite){
-    Texture texture; texture.loadFromFile("./resources/TraxBlancBlancRougeRouge.png");
-    sprite.setTexture(texture);
-    sprite.setScale(0.05,0.05);
-    sprite.move(ZONE_WIDTH,ZONE_HEIGHT);
-    app->draw(sprite);
-    app->display();
-}
 
 vector<int> invert_vector(vector<int> v) {
     vector<int> res{};
     for(size_t i = v.size()-1;;i--) {
         res.push_back(v[i]);
         if(i==0)
-        break;
+            break;
     }
     return res;
 } 
 
-void Tuile::turn() {
+void TuileDomino::turn() {
     vector<int> tmp = bords[3].x;
     bords[3].x = bords[2].x;
     bords[2].x = invert_vector(bords[1].x);

@@ -1,24 +1,106 @@
 #include "DominoCarre.hpp"
-#include "Main.hpp"
-#include "unistd.h"
 
-DominoCarre::DominoCarre(int h, int w) {
-    
-    if(h <= 1 && w <= 1 ) {
-        height = 5;
-        width = 5;
-    } else {
-        height = h;
-        width = w;
-    }
+DominoCarre::DominoCarre(int h, int w) 
+            : height{h}, width{w}, terrain{Terrain<TuileDomino> {height, width}}{
     bag = (height*width)*0.75;
-    if(bag % 2 == 1)
+    if(bag == 0 || bag % 2 == 1)
         bag++;
 }
 
+int calculPoints(Bord<vector<int>> bord1, Bord<vector<int>> bord2) {
+    vector<int> bord1_val = bord1.x;
+    vector<int> bord2_val = bord2.x;
+    int points = 0;
+    for(size_t i = 0; i < bord2_val.size(); i++){
+        points += bord1_val[i];
+    }
+    return points;
+}
+
+
+bool checkBordsValues(Bord<vector<int>> bord1, Bord<vector<int>> bord2) {
+    vector<int> bord1_val = bord1.x;
+    vector<int> bord2_val = bord2.x;
+    if(bord1_val.size() != bord2_val.size())
+        return false;
+    for(size_t i = 0; i < bord2_val.size(); i++){
+        if (bord1_val[i] != bord2_val[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// return -1 si le placement a echoué, les points gagnes sinon
+int DominoCarre::tryPlaceTuile(int y, int x, TuileDomino *tuile) {
+    if( x < 0 || width <= x || y < 0 || height <= y || terrain.getTuile(y, x) != nullptr ) 
+        return -1;
+
+    if(terrain.getTuile(y, x+1) == nullptr 
+    && terrain.getTuile(y, x-1) == nullptr 
+    && terrain.getTuile(y+1, x) == nullptr 
+    && terrain.getTuile(y-1, x) == nullptr 
+    && !terrain.isEmpty() ) {
+        return -1;
+    }
+
+    int points = 0;
+
+    if( terrain.getTuile(y, x+1) != nullptr) {
+        Bord<vector<int>> bord1 = tuile->bords[1];
+        Bord<vector<int>> bord2 = terrain.getTuile(y,x+1)->bords[3];
+        if (!checkBordsValues(bord1,bord2))
+            return -1;
+        points += calculPoints(bord1, bord2);
+    }
+    if( terrain.getTuile(y, x-1) != nullptr) {
+        Bord<vector<int>> bord1 = tuile->bords[3];
+        Bord<vector<int>> bord2 = terrain.getTuile(y,x-1)->bords[1];
+        if (!checkBordsValues(bord1,bord2))
+            return -1;
+        points += calculPoints(bord1, bord2);
+    }
+    if( terrain.getTuile(y-1, x) != nullptr) {
+        Bord<vector<int>> bord1 = tuile->bords[0];
+        Bord<vector<int>> bord2 = terrain.getTuile(y-1,x)->bords[2];
+        if (!checkBordsValues(bord1,bord2))
+            return -1;
+        points += calculPoints(bord1, bord2);
+    }
+    if( terrain.getTuile(y+1, x) != nullptr) {
+        Bord<vector<int>> bord1 = tuile->bords[2];
+        Bord<vector<int>> bord2 = terrain.getTuile(y+1,x)->bords[0];
+        if (!checkBordsValues(bord1,bord2))
+            return -1;
+        points += calculPoints(bord1, bord2);
+    }
+    return points;
+}
+
+ vector<vector<int>> DominoCarre::getPossiblePlacements(TuileDomino *tuile) {
+    vector<vector<int>> res{};
+    for(int i = 0 ; i < terrain.getHeight(); i++) {
+        vector<int> list{};
+        for(int j = 0; j < terrain.getWidth(); j++) {
+            list.push_back(tryPlaceTuile(i, j, tuile));
+        }
+        res.push_back(list);
+    }
+    return res;
+}
+
+
+int DominoCarre::placeTuile(int y, int x, TuileDomino* tuile) {
+    int n = tryPlaceTuile(y, x, tuile);
+    if(n == -1)
+        return -1;
+    terrain.terrain[y][x] = tuile;
+    return n;
+}
+
+
 void DominoCarre::start() {
 
-    Terrain terrain{height, width};
     bool victory = false;
 
     int DRAW_WIDTH = 800;
@@ -55,9 +137,9 @@ void DominoCarre::start() {
     FloatRect retour_bounds = retour_sprite.getGlobalBounds();
 
 
-    Tuile *pick = getRandomTuile();
+    TuileDomino *pick = getRandomTuileDomino();
     bag--;
-    vector<vector<int>> possible_placements = terrain.getPossiblePlacements(pick);
+    vector<vector<int>> possible_placements = getPossiblePlacements(pick);
 
 
     Text player_text;
@@ -98,7 +180,7 @@ void DominoCarre::start() {
                         }
                         if (turn_bounds.contains(mouse) || cross_bounds.contains(mouse)) {
                             pick->turn();
-                            possible_placements = terrain.getPossiblePlacements(pick);
+                            possible_placements = getPossiblePlacements(pick);
                         }
                         if (cross_bounds.contains(mouse)) {
                             player = (player+1) %2;
@@ -106,8 +188,8 @@ void DominoCarre::start() {
                             if(bag == 0 ) {
                                 victory = true;
                             } else {
-                                pick = getRandomTuile();
-                                possible_placements = terrain.getPossiblePlacements(pick);
+                                pick = getRandomTuileDomino();
+                                possible_placements = getPossiblePlacements(pick);
                                 bag--;
                                 bag_text.setString("bag size = " + to_string(bag));
                             }
@@ -117,9 +199,10 @@ void DominoCarre::start() {
                             int x = mouse.x / block_width;
                             int y = mouse.y / block_height;
                             if(0 <= x && x < terrain.getWidth() && 0 <= y && y < terrain.getHeight()) {
+
                                 if(possible_placements[y][x] == -1)
                                     break;
-                                int points = terrain.placeTuile(y,x, pick);
+                                int points = placeTuile(y,x, pick);
                                 if(player == 0)
                                     score1 += points;
                                 else
@@ -132,9 +215,9 @@ void DominoCarre::start() {
                                 if(bag == 0) {
                                     victory = true;
                                 } else {
-                                    pick = getRandomTuile();
+                                    pick = getRandomTuileDomino();
+                                    possible_placements = getPossiblePlacements(pick);
                                     bag--;
-                                    possible_placements = terrain.getPossiblePlacements(pick);
                                     player = (player+1) %2;
                                     player_text.setString("Joueur " + to_string(player+1));
                                     bag_text.setString("bag size = " + to_string(bag));

@@ -26,8 +26,38 @@ string updateTuile(string tuile){
     return tuile;
 }
 
+// return -1 si le placement a echoué, les points gagnes sinon
+int Trax::tryPlaceTuile(int y, int x, TuileTrax *tuile) {
+    int points = 0;
+    if( x < 0 || width <= x || y < 0 || height <= y || terrain.getTuile(y, x) != nullptr ) 
+        return -1;
+
+    // TODO
+
+    return points;
+}
+
+ vector<vector<int>> Trax::getPossiblePlacements(TuileTrax *tuile) {
+    vector<vector<int>> res{};
+    for(int i = 0 ; i < terrain.getHeight(); i++) {
+        vector<int> list{};
+        for(int j = 0; j < terrain.getWidth(); j++) {
+            list.push_back(tryPlaceTuile(i, j, tuile));
+        }
+        res.push_back(list);
+    }
+    return res;
+}
+
+int Trax::placeTuile(int y, int x, TuileTrax* tuile) {
+    int n = tryPlaceTuile(y, x, tuile);
+    if(n == -1)
+        return -1;
+    terrain.terrain[y][x] = tuile;
+    return n;
+}
+
 void Trax::start(){
-    Terrain terrain{8,8};
     bool victory = false;
 
     int DRAW_WIDTH = 800;
@@ -40,13 +70,11 @@ void Trax::start(){
     font.loadFromFile("./resources/arial.ttf");
 
     string texture_tuile_nom = "";
-    Tuile *pick = getRandomTuileTrax();
-    vector<vector<int>> possible_placements = terrain.getPossiblePlacements(pick);
+    TuileTrax *pick = getRandomTuileTrax();
+    vector<vector<int>> possible_placements = getPossiblePlacements(pick);
     
-    //Bord 
 
-    //if(pick->getBords()[0]->getValeurs()[0] == 1 ){
-    if(pick->getBord("nord").x[0] == 0 && pick->getBord("est").x[0] == 0 ){
+    if(pick->bords[0].x == 0 && pick->bords[1].x == 0 ){
         texture_tuile_nom = "./resources/TraxBlancBlancRougeRouge.png";
     }else {
         texture_tuile_nom = "./resources/TraxBlancRougeBlancRouge.png";
@@ -118,9 +146,9 @@ void Trax::start(){
                             if(0 <= x && x < terrain.getWidth() && 0 <= y && y < terrain.getHeight()) {
                                 if(possible_placements[y][x] == -1)
                                     break;
-                                int points = terrain.placeTuile(y,x, pick);
+                                int points = placeTuile(y,x, pick);
                                 pick = getRandomTuileTrax();
-                                possible_placements = terrain.getPossiblePlacements(pick);
+                                possible_placements = getPossiblePlacements(pick);
                                 player = (player+1) %2;
                                 player_text.setString("Joueur " + to_string(player+1));
 

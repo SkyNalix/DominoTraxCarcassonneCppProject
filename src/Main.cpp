@@ -44,7 +44,7 @@ void Main::openMenuPrincipal(){
                         Vector2f mouse = app.mapPixelToCoords(Mouse::getPosition(app));
                         if (domino_bounds.contains(mouse)) {
                             app.close();
-                            DominoCarre c{1,1};
+                            DominoCarre c{10,10};
                             c.start();
                         }else if(trax_bounds.contains(mouse)){
                             app.close();
