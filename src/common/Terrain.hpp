@@ -2,7 +2,6 @@
 #define TERRAIN_HPP
 
 #include <iostream>
-#include "Bord.hpp"
 #include <SFML/Graphics.hpp>
 using namespace std;
 using namespace sf;
@@ -81,8 +80,8 @@ void Terrain<T>::draw(RenderWindow *app, int ZONE_WIDTH, int ZONE_HEIGHT) {
             if( tuile != nullptr) {
                 tuile->draw(app, block_width*x, block_height*y, block_width, block_height);
             } 
-            // else
-            //     app->draw(rectangle);
+            else
+                app->draw(rectangle);
         }
     }
 }

@@ -3,20 +3,19 @@
 
 #include <iostream>
 #include <vector>
+#include "common/Misc.hpp"
 #include <SFML/Graphics.hpp>
-
-#include "common/Bord.hpp"
 
 using namespace std;
 using namespace sf;
 
-
 class TuileTrax {
     public :
-        vector<Bord<int>> bords;
-        TuileTrax(const vector<Bord<int>> &bords);
+        vector<int> bords;
+        TuileTrax(const vector<int> &bords);
         void draw(RenderWindow *app, int start_x, int start_y, int ZONE_WIDTH, int ZONE_HEIGHT );
         void turn();
+        String toTexturePath();
 };
 TuileTrax* getRandomTuileTrax();
 

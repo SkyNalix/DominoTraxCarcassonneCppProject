@@ -7,24 +7,20 @@ DominoCarre::DominoCarre(int h, int w)
         bag++;
 }
 
-int calculPoints(Bord<vector<int>> bord1, Bord<vector<int>> bord2) {
-    vector<int> bord1_val = bord1.x;
-    vector<int> bord2_val = bord2.x;
+int calculPoints(vector<int> bord1, vector<int> bord2) {
     int points = 0;
-    for(size_t i = 0; i < bord2_val.size(); i++){
-        points += bord1_val[i];
+    for(size_t i = 0; i < bord2.size(); i++){
+        points += bord1[i];
     }
     return points;
 }
 
 
-bool checkBordsValues(Bord<vector<int>> bord1, Bord<vector<int>> bord2) {
-    vector<int> bord1_val = bord1.x;
-    vector<int> bord2_val = bord2.x;
-    if(bord1_val.size() != bord2_val.size())
+bool checkBordsValues(vector<int> bord1, vector<int> bord2) {
+    if(bord1.size() != bord2.size())
         return false;
-    for(size_t i = 0; i < bord2_val.size(); i++){
-        if (bord1_val[i] != bord2_val[i]) {
+    for(size_t i = 0; i < bord2.size(); i++){
+        if (bord1[i] != bord2[i]) {
             return false;
         }
     }
@@ -47,29 +43,29 @@ int DominoCarre::tryPlaceTuile(int y, int x, TuileDomino *tuile) {
     int points = 0;
 
     if( terrain.getTuile(y, x+1) != nullptr) {
-        Bord<vector<int>> bord1 = tuile->bords[1];
-        Bord<vector<int>> bord2 = terrain.getTuile(y,x+1)->bords[3];
+        vector<int> bord1 = tuile->bords[1];
+        vector<int> bord2 = terrain.getTuile(y,x+1)->bords[3];
         if (!checkBordsValues(bord1,bord2))
             return -1;
         points += calculPoints(bord1, bord2);
     }
     if( terrain.getTuile(y, x-1) != nullptr) {
-        Bord<vector<int>> bord1 = tuile->bords[3];
-        Bord<vector<int>> bord2 = terrain.getTuile(y,x-1)->bords[1];
+        vector<int> bord1 = tuile->bords[3];
+        vector<int> bord2 = terrain.getTuile(y,x-1)->bords[1];
         if (!checkBordsValues(bord1,bord2))
             return -1;
         points += calculPoints(bord1, bord2);
     }
     if( terrain.getTuile(y-1, x) != nullptr) {
-        Bord<vector<int>> bord1 = tuile->bords[0];
-        Bord<vector<int>> bord2 = terrain.getTuile(y-1,x)->bords[2];
+        vector<int> bord1 = tuile->bords[0];
+        vector<int> bord2 = terrain.getTuile(y-1,x)->bords[2];
         if (!checkBordsValues(bord1,bord2))
             return -1;
         points += calculPoints(bord1, bord2);
     }
     if( terrain.getTuile(y+1, x) != nullptr) {
-        Bord<vector<int>> bord1 = tuile->bords[2];
-        Bord<vector<int>> bord2 = terrain.getTuile(y+1,x)->bords[0];
+        vector<int> bord1 = tuile->bords[2];
+        vector<int> bord2 = terrain.getTuile(y+1,x)->bords[0];
         if (!checkBordsValues(bord1,bord2))
             return -1;
         points += calculPoints(bord1, bord2);
@@ -172,11 +168,14 @@ void DominoCarre::start() {
                 case Event::Closed:
                     app.close(); break;
                 case Event::MouseButtonPressed: {
-                    if (!victory && event.mouseButton.button == sf::Mouse::Left) {
+                    if(victory) {
+                        app.close();
+                        openMenuPrincipal();
+                    } else if (event.mouseButton.button == sf::Mouse::Left) {
                         Vector2f mouse = app.mapPixelToCoords(Mouse::getPosition(app));
                         if(retour_bounds.contains(mouse)){
                             app.close();
-                            Main::openMenuPrincipal();
+                            openMenuPrincipal();
                         }
                         if (turn_bounds.contains(mouse) || cross_bounds.contains(mouse)) {
                             pick->turn();
@@ -303,10 +302,6 @@ void DominoCarre::start() {
             text.setFillColor(Color::Black);
             text.move(controller_start_x*0.3, DRAW_HEIGHT*0.44);
             app.draw(text);
-            app.display();
-            sleep(5);
-            app.close();
-            Main::openMenuPrincipal();
         }
 
         app.display();

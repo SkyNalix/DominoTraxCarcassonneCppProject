@@ -26,21 +26,42 @@ string updateTuile(string tuile){
     return tuile;
 }
 
-// return -1 si le placement a echoué, les points gagnes sinon
-int Trax::tryPlaceTuile(int y, int x, TuileTrax *tuile) {
-    int points = 0;
+// return false si le placement a echoué, true sinon
+bool Trax::tryPlaceTuile(int y, int x, TuileTrax *tuile) {
     if( x < 0 || width <= x || y < 0 || height <= y || terrain.getTuile(y, x) != nullptr ) 
-        return -1;
+        return false;
+    
+    if(terrain.getTuile(y, x+1) == nullptr 
+        && terrain.getTuile(y, x-1) == nullptr 
+        && terrain.getTuile(y+1, x) == nullptr 
+        && terrain.getTuile(y-1, x) == nullptr 
+        && terrain.isEmpty() ) {
+        return true;
+    }
 
-    // TODO
-
-    return points;
+    if( terrain.getTuile(y, x+1) != nullptr) {
+        if (tuile->bords[1] == terrain.getTuile(y,x+1)->bords[3])
+            return true;
+    }
+    if( terrain.getTuile(y, x-1) != nullptr) {
+        if (tuile->bords[3] == terrain.getTuile(y,x-1)->bords[1])
+            return true;
+    }
+    if( terrain.getTuile(y-1, x) != nullptr) {
+        if (tuile->bords[0] == terrain.getTuile(y-1,x)->bords[2])
+            return true;
+    }
+    if( terrain.getTuile(y+1, x) != nullptr) {
+        if (tuile->bords[2] == terrain.getTuile(y+1, x)->bords[0])
+            return true;
+    }
+    return false;
 }
 
- vector<vector<int>> Trax::getPossiblePlacements(TuileTrax *tuile) {
-    vector<vector<int>> res{};
+ vector<vector<bool>> Trax::getPossiblePlacements(TuileTrax *tuile) {
+    vector<vector<bool>> res{};
     for(int i = 0 ; i < terrain.getHeight(); i++) {
-        vector<int> list{};
+        vector<bool> list{};
         for(int j = 0; j < terrain.getWidth(); j++) {
             list.push_back(tryPlaceTuile(i, j, tuile));
         }
@@ -49,16 +70,149 @@ int Trax::tryPlaceTuile(int y, int x, TuileTrax *tuile) {
     return res;
 }
 
-int Trax::placeTuile(int y, int x, TuileTrax* tuile) {
-    int n = tryPlaceTuile(y, x, tuile);
-    if(n == -1)
-        return -1;
+bool Trax::placeTuile(int y, int x, TuileTrax* tuile) {
+    bool n = tryPlaceTuile(y, x, tuile);
+    if(n == false)
+        return false;
     terrain.terrain[y][x] = tuile;
-    return n;
+    return true;
+}
+
+
+void Trax::angleForcedPlays(int y, int x) {
+    TuileTrax * top = terrain.getTuile(y-1,x);
+    TuileTrax * right = terrain.getTuile(y,x+1);
+    TuileTrax * bottom = terrain.getTuile(y+1,x);
+    TuileTrax * left = terrain.getTuile(y,x-1);
+    if(
+        top != nullptr && left != nullptr
+        && top->bords[2] == left->bords[1]
+    ) {
+        int c1 = top->bords[2];
+        int c2 = (c1+1)%2;
+        placeTuile(y,x, new TuileTrax(vector<int>{c1,c2,c2,c1}));
+        return;
+    }
+    if(
+        top != nullptr && right != nullptr
+        && top->bords[2] == right->bords[3]
+    ) {
+        int c1 = top->bords[2];
+        int c2 = (c1+1)%2;
+        placeTuile(y,x, new TuileTrax(vector<int>{c1,c1,c2,c2}));
+        return;
+    }
+
+    if(
+        bottom != nullptr && left != nullptr
+        && bottom->bords[0] == left->bords[1]
+    ) {
+        int c1 = bottom->bords[0];
+        int c2 = (c1+1)%2;
+        placeTuile(y,x, new TuileTrax(vector<int>{c2,c2,c1,c1}));
+        return;
+    }
+    if(
+        bottom != nullptr && right != nullptr
+        && bottom->bords[0] == right->bords[3]
+    ) {
+        int c1 = bottom->bords[0];
+        int c2 = (c1+1)%2;
+        placeTuile(y,x, new TuileTrax(vector<int>{c2,c1,c1,c2}));
+        return;
+    }
+}
+
+void Trax::lineForcedPlays(int y, int x) {
+    TuileTrax * top = terrain.getTuile(y-1,x);
+    TuileTrax * bottom = terrain.getTuile(y+1,x);
+    if(
+        top != nullptr && bottom != nullptr
+        && top->bords[2] == bottom->bords[0]
+    ) {
+        int c1 = top->bords[2];
+        int c2 = (c1+1)%2;
+        placeTuile(y,x, new TuileTrax(vector<int>{c1,c2,c1,c2}));
+        return;
+    }
+    TuileTrax * left = terrain.getTuile(y,x-1);
+    TuileTrax * right = terrain.getTuile(y,x+1);
+    if(
+        left != nullptr && right != nullptr
+        && left->bords[1] == right->bords[3]
+    ) {
+        int c1 = left->bords[1];
+        int c2 = (c1+1)%2;
+        placeTuile(y,x, new TuileTrax(vector<int>{c2,c1,c2,c1}));
+    } 
+    return;
+}
+
+
+void Trax::doAllForcedPlays() {
+    for(int y = 0 ; y < terrain.getHeight(); y++) {
+        for(int x = 0; x < terrain.getWidth(); x++) {
+            if(terrain.getTuile(y,x) == nullptr)
+                angleForcedPlays(y,x);
+            if(terrain.getTuile(y,x) == nullptr)
+                lineForcedPlays(y,x);
+        }
+    }
+}
+
+
+
+vector<tuple<int, TuileTrax *>> unionLists(vector<tuple<int, TuileTrax *>> a, vector<tuple<int, TuileTrax *>> b) {
+    for(size_t i = 0; i < b.size(); i++ ) {
+        a.push_back(b[i]);
+    }
+    return a;
+}
+
+/*
+bool listContainTuile(vector<tuple<int, TuileTrax *>> l, tuple<int, TuileTrax *> *t) {
+    for(size_t i = 0; i < l.size(); i++ ) {
+        if(get<0>(l[i]) == get<0>(*t))
+            return true;
+    }
+    return false;
+}
+
+tuple <bool, vector<tuple<int, TuileTrax *>>> Trax::checkVictoryOnPath
+        (vector<tuple<int, TuileTrax *>> visited,
+                int player,
+                tuple<int, TuileTrax *> current
+                 ) {
+
+    if(get<1>(current) == nullptr || listContainTuile(visited, &current)) 
+                return make_tuple(true, visited);
+}
+*/
+
+// cherche et renvoi un joueur gagnant
+int Trax::checkVictory() {
+    /*
+    vector<tuple<int, TuileTrax *>> visited{};
+    for(int y = 0; y < terrain.getHeight(); y++) {
+        for(int x = 0; x < terrain.getWidth(); x++) {
+            TuileTrax* tuile = terrain.getTuile(y,x);
+            int player = 0;
+            tuple<int, TuileTrax *> current = make_tuple(player, tuile);
+            if(tuile == nullptr || listContainTuile(visited, &current)) continue;
+        
+            tuple <bool, vector<tuple<int, TuileTrax *>>> path_search 
+                    = checkVictoryOnPath({}, player, current);
+            if( get<0>(path_search)) 
+                return player;
+            visited = unionLists(visited, get<1>(path_search));
+        }
+    }
+    */
+    return -1;
 }
 
 void Trax::start(){
-    bool victory = false;
+    int victory = -1;
 
     int DRAW_WIDTH = 800;
     int DRAW_HEIGHT = 700;
@@ -71,23 +225,8 @@ void Trax::start(){
 
     string texture_tuile_nom = "";
     TuileTrax *pick = getRandomTuileTrax();
-    vector<vector<int>> possible_placements = getPossiblePlacements(pick);
+    vector<vector<bool>> possible_placements = getPossiblePlacements(pick);
     
-
-    if(pick->bords[0].x == 0 && pick->bords[1].x == 0 ){
-        texture_tuile_nom = "./resources/TraxBlancBlancRougeRouge.png";
-    }else {
-        texture_tuile_nom = "./resources/TraxBlancRougeBlancRouge.png";
-    }
-
-    Texture tuile_texture;
-    tuile_texture.loadFromFile(texture_tuile_nom);
-    Sprite tuile_sprite;
-    tuile_sprite.setTexture(tuile_texture);
-    tuile_sprite.setScale(0.05,0.05);
-    tuile_sprite.move(controller_start_x+(controller_width*0.25),150);
-    FloatRect tuile_bounds = tuile_sprite.getGlobalBounds();
-
 
     Texture retour_texture;
     retour_texture.loadFromFile("./resources/Retour.jpg");
@@ -110,9 +249,8 @@ void Trax::start(){
     player_text.setFont(font);
     player_text.setString("Joueur 1");
     player_text.setFillColor(Color::Black);
-    player_text.setCharacterSize(30);
+    player_text.setCharacterSize(20);
     player_text.move(controller_start_x+(controller_width*0.25), 6);
-
 
     RenderWindow app(VideoMode(DRAW_WIDTH, DRAW_HEIGHT, 32), "Trax");
     while (app.isOpen()){
@@ -122,44 +260,32 @@ void Trax::start(){
                 case Event::Closed:
                     app.close(); break;
                 case Event::MouseButtonPressed: {
-                    if (!victory && event.mouseButton.button == sf::Mouse::Left) {
+                    if (victory==-1 && event.mouseButton.button == sf::Mouse::Left) {
                         Vector2f mouse = app.mapPixelToCoords(Mouse::getPosition(app));
                         if(retour_bounds.contains(mouse)){
                             app.close();
-                            Main::openMenuPrincipal();
+                            openMenuPrincipal();
                         }else if(turn_bounds.contains(mouse)){
-                            //rotateTuile(pick);
                             pick->turn();
-                            texture_tuile_nom = updateTuile(texture_tuile_nom);
-                            tuile_texture.loadFromFile(texture_tuile_nom);
-                            Sprite tuile_sprite;
-                            tuile_sprite.setTexture(tuile_texture);
-                            tuile_sprite.setScale(0.05,0.05);
-                            tuile_sprite.move(controller_start_x+(controller_width*0.25),150);
-                            FloatRect tuile_bounds = tuile_sprite.getGlobalBounds();
-                                                    
+                            possible_placements = getPossiblePlacements(pick);
                         }
                         if(0 < mouse.x && mouse.x < DRAW_WIDTH-200 && 0 < mouse.y && mouse.y < DRAW_HEIGHT) {
 
                             int x = mouse.x / block_width;
                             int y = mouse.y / block_height;
                             if(0 <= x && x < terrain.getWidth() && 0 <= y && y < terrain.getHeight()) {
-                                if(possible_placements[y][x] == -1)
-                                    break;
-                                int points = placeTuile(y,x, pick);
-                                pick = getRandomTuileTrax();
-                                possible_placements = getPossiblePlacements(pick);
-                                player = (player+1) %2;
-                                player_text.setString("Joueur " + to_string(player+1));
+                            
+                                if(placeTuile(y,x, pick)) {
+                                    doAllForcedPlays();
+                                    pick = getRandomTuileTrax();
+                                    possible_placements = getPossiblePlacements(pick);
+                                    player = (player+1) %2;
 
-                                //texture_tuile_nom = updateTuile(texture_tuile_nom);
-                                tuile_texture.loadFromFile(texture_tuile_nom);
-                                Sprite tuile_sprite;
-                                tuile_sprite.setTexture(tuile_texture);
-                                tuile_sprite.setScale(0.05,0.05);
-                                tuile_sprite.move(mouse.x,mouse.y);
-                                FloatRect tuile_bounds = tuile_sprite.getGlobalBounds();
-                                app.draw(tuile_sprite); 
+                                    string player_str = player==0 ? "blanc" : "rouge";
+                                    player_text.setString("Joueur " + player_str);
+
+                                    victory = checkVictory();
+                                }
                            }
                         }
                     } 
@@ -170,8 +296,6 @@ void Trax::start(){
         }
         app.clear();
         app.draw(RectangleShape(Vector2f(DRAW_WIDTH, DRAW_HEIGHT))); // fond blanc
-    
-
 
         // affichage de la ligne separation entre le jeu et les controlles
         RectangleShape line(Vector2f(5, DRAW_HEIGHT));
@@ -181,17 +305,24 @@ void Trax::start(){
 
         // affichage du terrain de jeu
         terrain.draw(&app, controller_start_x, DRAW_HEIGHT);
-        
-
 
         // affichage des controlles
         app.draw(player_text);
-        app.draw(tuile_sprite);
-        int pick_start_x = controller_start_x+(controller_width*0.1);
+        int pick_start_x = controller_start_x+(controller_width*0.3);
         int pick_end_x = controller_start_x+(controller_width*0.9);
+        pick->draw(&app, 
+            pick_start_x, 120, 
+            pick_end_x-pick_start_x, 
+            pick_end_x-pick_start_x
+            );
+        
+
+        if(victory > -1) {
+            // TODO victory
+        }
+        
         app.draw(retour_sprite);
         app.draw(turn_sprite);
-
         app.display();
     } 
 }

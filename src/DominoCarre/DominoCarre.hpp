@@ -29,6 +29,6 @@ class DominoCarre {
         int placeTuile(int y, int x, TuileDomino* tuile);
 
 };
-int calculPoints(Bord<vector<int>> bord1, Bord<vector<int>> bord2);
+int calculPoints(vector<int> bord1, vector<int> bord2);
 
 #endif

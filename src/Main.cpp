@@ -1,9 +1,10 @@
 
 #include "Main.hpp"
 
-void Main::openMenuPrincipal(){
-    int WIDTH = 800;
-    int HEIGHT = 600;
+
+
+
+void openMenuPrincipal(){
 
     Font font;
     font.loadFromFile("./resources/arial.ttf");
@@ -44,7 +45,7 @@ void Main::openMenuPrincipal(){
                         Vector2f mouse = app.mapPixelToCoords(Mouse::getPosition(app));
                         if (domino_bounds.contains(mouse)) {
                             app.close();
-                            DominoCarre c{10,10};
+                            DominoCarre c{5,5};
                             c.start();
                         }else if(trax_bounds.contains(mouse)){
                             app.close();
@@ -67,28 +68,11 @@ void Main::openMenuPrincipal(){
 int main() {
     srand(time(NULL));
     
-    Main::openMenuPrincipal();
-    
-    /*
-    while(true) {
-        cout << "Selectionez le jeu:\n"
-        << "\t  1   : Domino CarrÃ©es\n"
-        << "\tautre : quitter\n";
+    loadAllTextures();
 
-        int choice;
-        cin >> choice;
-        switch(choice) {
-            case 1: {
-                DominoCarre c{1,1};
-                c.start();
-                break;
-            }
-            default: 
-                return EXIT_FAILURE;
-        }
-        cout << "\n\n\n\n" << endl;
-    } 
-    */
-
+    openMenuPrincipal();
     return EXIT_SUCCESS;
 }
+
+
+

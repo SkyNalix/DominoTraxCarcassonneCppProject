@@ -21,9 +21,20 @@ class Trax{
         Trax(int p);
         void start();
 
-        int tryPlaceTuile(int y, int x, TuileTrax *tuile);
-        vector<vector<int>> getPossiblePlacements(TuileTrax *tuile);
-        int placeTuile(int y, int x, TuileTrax* tuile);
+    private:
+        bool tryPlaceTuile(int y, int x, TuileTrax *tuile);
+        vector<vector<bool>> getPossiblePlacements(TuileTrax *tuile);
+        bool placeTuile(int y, int x, TuileTrax* tuile);
+        void doAllForcedPlays();
+        void angleForcedPlays(int y, int x);
+        void lineForcedPlays(int y, int x);
+        tuple <bool, vector<tuple<int, TuileTrax *>>> checkVictoryOnPath(
+                vector<tuple<int, TuileTrax *>> visited,
+                int player,
+                tuple<int, TuileTrax *> current
+            );
+        int checkVictory();
+
 
 };
 

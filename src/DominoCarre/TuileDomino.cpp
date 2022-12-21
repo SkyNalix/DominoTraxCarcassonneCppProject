@@ -1,10 +1,6 @@
 #include "TuileDomino.hpp"
-#include "common/Bord.hpp"
 
-
-
-
-TuileDomino::TuileDomino(const vector<Bord<vector<int>>> &bords) : bords{bords} {}
+TuileDomino::TuileDomino(const vector<vector<int>> &bords) : bords{bords} {}
 
 vector<vector<int>> pioches_possible{
     {1,1,1},
@@ -13,10 +9,10 @@ vector<vector<int>> pioches_possible{
 };
 
 TuileDomino* getRandomTuileDomino() {
-    vector<Bord<vector<int>>> bords{};
+    vector<vector<int>> bords{};
     for(int i = 0; i < 4; i++) {
         vector<int> list = pioches_possible[rand() % pioches_possible.size()];
-        Bord<vector<int>> bord {list};
+        vector<int> bord {list};
         bords.push_back(bord);
     }
     return new TuileDomino{bords};
@@ -93,12 +89,12 @@ void TuileDomino::draw(RenderWindow *app, int start_x, int start_y, int ZONE_WID
                 app->draw(line);
             }
             
-            Bord<vector<int>> bord = bords[i];
+            vector<int> bord = bords[i];
             Font font;
             font.loadFromFile("./resources/arial.ttf");
             Text text;
             text.setFont(font);
-            text.setString(to_string(bord.x[j]));
+            text.setString(to_string(bord[j]));
             text.setCharacterSize(domino_height*0.8);
             text.setFillColor(Color::Black);
             if(i==0 || i== 2)
@@ -124,9 +120,9 @@ vector<int> invert_vector(vector<int> v) {
 } 
 
 void TuileDomino::turn() {
-    vector<int> tmp = bords[3].x;
-    bords[3].x = bords[2].x;
-    bords[2].x = invert_vector(bords[1].x);
-    bords[1].x = bords[0].x;
-    bords[0].x = invert_vector(tmp);
+    vector<int> tmp = bords[3];
+    bords[3] = bords[2];
+    bords[2] = invert_vector(bords[1]);
+    bords[1] = bords[0];
+    bords[0] = invert_vector(tmp);
 }
