@@ -58,18 +58,6 @@ bool Trax::tryPlaceTuile(int y, int x, TuileTrax *tuile) {
     return false;
 }
 
- vector<vector<bool>> Trax::getPossiblePlacements(TuileTrax *tuile) {
-    vector<vector<bool>> res{};
-    for(int i = 0 ; i < terrain.height; i++) {
-        vector<bool> list{};
-        for(int j = 0; j < terrain.width; j++) {
-            list.push_back(tryPlaceTuile(i, j, tuile));
-        }
-        res.push_back(list);
-    }
-    return res;
-}
-
 bool Trax::placeTuile(int y, int x, TuileTrax* tuile) {
     bool n = tryPlaceTuile(y, x, tuile);
     if(n == false)
@@ -223,9 +211,8 @@ void Trax::start(){
     Font font;
     font.loadFromFile("./resources/arial.ttf");
 
-    string texture_tuile_nom = "";
-    TuileTrax *pick = getRandomTuileTrax();
-    vector<vector<bool>> possible_placements = getPossiblePlacements(pick);
+    TuileTrax defaultTuile = TuileTrax(vector<int>{0,1,0,1});
+    TuileTrax *pick = new TuileTrax(defaultTuile);
     
 
     Texture retour_texture;
@@ -244,6 +231,14 @@ void Trax::start(){
     turn_sprite.move(controller_start_x+(controller_width*0.25),300);
     FloatRect turn_bounds = turn_sprite.getGlobalBounds();
 
+    Texture flip_texture;
+    flip_texture.loadFromFile("./resources/flip.png");
+    Sprite flip_sprite;
+    flip_sprite.setTexture(flip_texture);
+    flip_sprite.setScale(0.4, 0.4);
+    flip_sprite.move(controller_start_x+(controller_width*0.30),430);
+    FloatRect flip_bounds = flip_sprite.getGlobalBounds();
+
 
     Text player_text;
     player_text.setFont(font);
@@ -251,6 +246,7 @@ void Trax::start(){
     player_text.setFillColor(Color::Black);
     player_text.setCharacterSize(20);
     player_text.move(controller_start_x+(controller_width*0.25), 6);
+
 
     RenderWindow app(VideoMode(DRAW_WIDTH, DRAW_HEIGHT, 32), "Trax");
     while (app.isOpen()){
@@ -265,9 +261,16 @@ void Trax::start(){
                         if(retour_bounds.contains(mouse)){
                             app.close();
                             openMenuPrincipal();
-                        }else if(turn_bounds.contains(mouse)){
+                        } else if(turn_bounds.contains(mouse)){
                             pick->turn();
-                            possible_placements = getPossiblePlacements(pick);
+                        } else if(flip_bounds.contains(mouse)) {
+                            if(pick->bords[0] == pick->bords[1] || pick->bords[1] == pick->bords[2]) {
+                                // pick = tuile AABB avec n'importe quel rotation
+                                pick = new TuileTrax(vector<int>{0,1,0,1});
+                            } else {
+                                // pick = tuile ABAB
+                                pick = new TuileTrax(vector<int>{0,0,1,1});
+                            }
                         }
                         if(0 < mouse.x && mouse.x < DRAW_WIDTH-200 && 0 < mouse.y && mouse.y < DRAW_HEIGHT) {
 
@@ -277,8 +280,7 @@ void Trax::start(){
                             
                                 if(placeTuile(y,x, pick)) {
                                     doAllForcedPlays();
-                                    pick = getRandomTuileTrax();
-                                    possible_placements = getPossiblePlacements(pick);
+                                    pick = new TuileTrax(defaultTuile);
                                     player = (player+1) %2;
 
                                     string player_str = player==0 ? "blanc" : "rouge";
@@ -323,6 +325,7 @@ void Trax::start(){
         
         app.draw(retour_sprite);
         app.draw(turn_sprite);
+        app.draw(flip_sprite);
         app.display();
     } 
 }
