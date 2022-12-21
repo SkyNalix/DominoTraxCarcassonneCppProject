@@ -75,9 +75,9 @@ int DominoCarre::tryPlaceTuile(int y, int x, TuileDomino *tuile) {
 
  vector<vector<int>> DominoCarre::getPossiblePlacements(TuileDomino *tuile) {
     vector<vector<int>> res{};
-    for(int i = 0 ; i < terrain.getHeight(); i++) {
+    for(int i = 0 ; i < terrain.height; i++) {
         vector<int> list{};
-        for(int j = 0; j < terrain.getWidth(); j++) {
+        for(int j = 0; j < terrain.width; j++) {
             list.push_back(tryPlaceTuile(i, j, tuile));
         }
         res.push_back(list);
@@ -95,6 +95,8 @@ int DominoCarre::placeTuile(int y, int x, TuileDomino* tuile) {
 }
 
 
+
+
 void DominoCarre::start() {
 
     bool victory = false;
@@ -103,8 +105,8 @@ void DominoCarre::start() {
     int DRAW_HEIGHT = 700;
     int controller_start_x = DRAW_WIDTH*0.75;
     int controller_width = DRAW_WIDTH*0.25;
-                            int block_width = controller_start_x/terrain.getWidth();
-                            int block_height = DRAW_HEIGHT/terrain.getHeight();
+    int block_width = controller_start_x/terrain.width;
+    int block_height = DRAW_HEIGHT/terrain.height;
     Font font;
     font.loadFromFile("./resources/arial.ttf");
 
@@ -197,7 +199,7 @@ void DominoCarre::start() {
 
                             int x = mouse.x / block_width;
                             int y = mouse.y / block_height;
-                            if(0 <= x && x < terrain.getWidth() && 0 <= y && y < terrain.getHeight()) {
+                            if(0 <= x && x < terrain.width && 0 <= y && y < terrain.height) {
 
                                 if(possible_placements[y][x] == -1)
                                     break;
@@ -260,8 +262,8 @@ void DominoCarre::start() {
         app.draw(bag_text);
 
         // affichage de l'aide au placement
-        for(int y = 0; y < terrain.getHeight() && !victory; y++) {
-            for(int x = 0; x < terrain.getWidth(); x++) {
+        for(int y = 0; y < terrain.height && !victory; y++) {
+            for(int x = 0; x < terrain.width; x++) {
                 if(possible_placements[y][x] == -1)
                     continue;
                 RectangleShape rect(Vector2f(block_width, block_height));

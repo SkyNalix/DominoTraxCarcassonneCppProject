@@ -15,7 +15,6 @@ SFML_ARGS = -lsfml-graphics -lsfml-window -lsfml-system
 all: clean init $(OBJECTS)
 	$(CPP) -o $(EXE_NAME) $(OBJECTS_IN_OBJ_DIR) $(SFML_ARGS)
 	echo "Lancez avec ./$(EXE_NAME)"
-	./go
 
 %.o: %.cpp %.hpp
 	$(CPP) $(addprefix -I,$(SRC_DIRS)) -c $*.cpp -o $(OBJ_DIR)/$(notdir $@)

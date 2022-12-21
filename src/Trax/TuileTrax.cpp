@@ -28,7 +28,8 @@ String TuileTrax::toTexturePath() {
 
 
 void TuileTrax::draw(RenderWindow *app, int start_x, int start_y, int ZONE_WIDTH, int ZONE_HEIGHT){
-    Texture texture = getTexture(toTexturePath());
+    Texture texture;
+    texture.loadFromFile(toTexturePath());
     Sprite sprite;
     sprite.setTexture(texture);
     sprite.scale(1,1);

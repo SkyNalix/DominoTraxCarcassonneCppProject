@@ -68,8 +68,6 @@ void openMenuPrincipal(){
 int main() {
     srand(time(NULL));
     
-    loadAllTextures();
-
     openMenuPrincipal();
     return EXIT_SUCCESS;
 }

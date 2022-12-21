@@ -3,7 +3,6 @@
 
 #include <iostream>
 #include <vector>
-#include "common/Misc.hpp"
 #include <SFML/Graphics.hpp>
 
 using namespace std;

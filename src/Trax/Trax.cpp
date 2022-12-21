@@ -60,9 +60,9 @@ bool Trax::tryPlaceTuile(int y, int x, TuileTrax *tuile) {
 
  vector<vector<bool>> Trax::getPossiblePlacements(TuileTrax *tuile) {
     vector<vector<bool>> res{};
-    for(int i = 0 ; i < terrain.getHeight(); i++) {
+    for(int i = 0 ; i < terrain.height; i++) {
         vector<bool> list{};
-        for(int j = 0; j < terrain.getWidth(); j++) {
+        for(int j = 0; j < terrain.width; j++) {
             list.push_back(tryPlaceTuile(i, j, tuile));
         }
         res.push_back(list);
@@ -150,8 +150,8 @@ void Trax::lineForcedPlays(int y, int x) {
 
 
 void Trax::doAllForcedPlays() {
-    for(int y = 0 ; y < terrain.getHeight(); y++) {
-        for(int x = 0; x < terrain.getWidth(); x++) {
+    for(int y = 0 ; y < terrain.height; y++) {
+        for(int x = 0; x < terrain.width; x++) {
             if(terrain.getTuile(y,x) == nullptr)
                 angleForcedPlays(y,x);
             if(terrain.getTuile(y,x) == nullptr)
@@ -193,7 +193,7 @@ tuple <bool, vector<tuple<int, TuileTrax *>>> Trax::checkVictoryOnPath
 int Trax::checkVictory() {
     /*
     vector<tuple<int, TuileTrax *>> visited{};
-    for(int y = 0; y < terrain.getHeight(); y++) {
+    for(int y = 0; y < terrain.height; y++) {
         for(int x = 0; x < terrain.getWidth(); x++) {
             TuileTrax* tuile = terrain.getTuile(y,x);
             int player = 0;
@@ -218,8 +218,8 @@ void Trax::start(){
     int DRAW_HEIGHT = 700;
     int controller_start_x = DRAW_WIDTH*0.75;
     int controller_width = DRAW_WIDTH*0.25;
-                            int block_width = controller_start_x/terrain.getWidth();
-                            int block_height = DRAW_HEIGHT/terrain.getHeight();
+    int block_width = controller_start_x/terrain.width;
+    int block_height = DRAW_HEIGHT/terrain.height;
     Font font;
     font.loadFromFile("./resources/arial.ttf");
 
@@ -273,7 +273,7 @@ void Trax::start(){
 
                             int x = mouse.x / block_width;
                             int y = mouse.y / block_height;
-                            if(0 <= x && x < terrain.getWidth() && 0 <= y && y < terrain.getHeight()) {
+                            if(0 <= x && x < terrain.width && 0 <= y && y < terrain.height) {
                             
                                 if(placeTuile(y,x, pick)) {
                                     doAllForcedPlays();
