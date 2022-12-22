@@ -1,17 +1,12 @@
 #include "TuileTrax.hpp"
 
-TuileTrax::TuileTrax(const vector<int> &bords) : bords{bords} {}
-
-
+TuileTrax::TuileTrax(const vector<BordColor> &bords) : bords{bords} {}
 
 TuileTrax* getRandomTuileTrax(){
-    // blanc = 0, rouge = 1
-    if(rand() % 2 == 0){ 
-        // blanc rouge blanc rouge   
-        return new TuileTrax{vector<int>{0,1,0,1}};
+    if(rand() % 2 == 0){  
+        return new TuileTrax{vector<BordColor>{white,red,white,red}};
     } else { 
-        // blanc blanc rouge rouge 
-        return new TuileTrax{vector<int>{0,0,1,1}};
+        return new TuileTrax{vector<BordColor>{white,white,red,red}};
     }
 }
 
@@ -38,7 +33,7 @@ void TuileTrax::draw(RenderWindow *app, int start_x, int start_y, int ZONE_WIDTH
 }
 
 void TuileTrax::turn() {
-    int tmp = bords[3];
+    BordColor tmp = bords[3];
     bords[3] = bords[2];
     bords[2] = bords[1];
     bords[1] = bords[0];

@@ -1,11 +1,6 @@
 #ifndef DOMINOCARRE_HPP
 #define DOMINOCARRE_HPP
 
-#include <iostream>
-#include <vector>
-#include "unistd.h"
-#include <SFML/Graphics.hpp>
-
 #include "Terrain.hpp"
 #include "Main.hpp"
 #include "TuileDomino.hpp"

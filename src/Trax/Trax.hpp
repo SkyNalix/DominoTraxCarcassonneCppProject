@@ -1,9 +1,6 @@
 #ifndef TRAX_HPP
 #define TRAX_HPP
 
-#include <iostream>
-#include <vector>
-#include <SFML/Graphics.hpp>
 
 #include "Terrain.hpp"
 #include "TuileTrax.hpp"

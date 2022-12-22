@@ -12,7 +12,7 @@ class TuileDomino {
     public :
         vector<vector<int>> bords;
         TuileDomino(const vector<vector<int>> &bords);
-        void draw(RenderWindow *app, int start_x, int start_y, int ZONE_WIDTH, int ZONE_HEIGHT ); 
+        void draw(sf::RenderWindow *app, int start_x, int start_y, int ZONE_WIDTH, int ZONE_HEIGHT ); 
         void turn(); 
 };
 TuileDomino* getRandomTuileDomino();

@@ -76,18 +76,18 @@ void Trax::angleForcedPlays(int y, int x) {
         top != nullptr && left != nullptr
         && top->bords[2] == left->bords[1]
     ) {
-        int c1 = top->bords[2];
-        int c2 = (c1+1)%2;
-        placeTuile(y,x, new TuileTrax(vector<int>{c1,c2,c2,c1}));
+        BordColor c1 = top->bords[2];
+        BordColor c2 = c1 == white ? red : white;
+        placeTuile(y,x, new TuileTrax(vector<BordColor>{c1,c2,c2,c1}));
         return;
     }
     if(
         top != nullptr && right != nullptr
         && top->bords[2] == right->bords[3]
     ) {
-        int c1 = top->bords[2];
-        int c2 = (c1+1)%2;
-        placeTuile(y,x, new TuileTrax(vector<int>{c1,c1,c2,c2}));
+        BordColor c1 = top->bords[2];
+        BordColor c2 = c1 == white ? red : white;
+        placeTuile(y,x, new TuileTrax(vector<BordColor>{c1,c1,c2,c2}));
         return;
     }
 
@@ -95,18 +95,18 @@ void Trax::angleForcedPlays(int y, int x) {
         bottom != nullptr && left != nullptr
         && bottom->bords[0] == left->bords[1]
     ) {
-        int c1 = bottom->bords[0];
-        int c2 = (c1+1)%2;
-        placeTuile(y,x, new TuileTrax(vector<int>{c2,c2,c1,c1}));
+        BordColor c1 = bottom->bords[0];
+        BordColor c2 = c1 == white ? red : white;
+        placeTuile(y,x, new TuileTrax(vector<BordColor>{c2,c2,c1,c1}));
         return;
     }
     if(
         bottom != nullptr && right != nullptr
         && bottom->bords[0] == right->bords[3]
     ) {
-        int c1 = bottom->bords[0];
-        int c2 = (c1+1)%2;
-        placeTuile(y,x, new TuileTrax(vector<int>{c2,c1,c1,c2}));
+        BordColor c1 = bottom->bords[0];
+        BordColor c2 = c1 == white ? red : white;
+        placeTuile(y,x, new TuileTrax(vector<BordColor>{c2,c1,c1,c2}));
         return;
     }
 }
@@ -118,9 +118,9 @@ void Trax::lineForcedPlays(int y, int x) {
         top != nullptr && bottom != nullptr
         && top->bords[2] == bottom->bords[0]
     ) {
-        int c1 = top->bords[2];
-        int c2 = (c1+1)%2;
-        placeTuile(y,x, new TuileTrax(vector<int>{c1,c2,c1,c2}));
+        BordColor c1 = top->bords[2];
+        BordColor c2 = c1 == white ? red : white;
+        placeTuile(y,x, new TuileTrax(vector<BordColor>{c1,c2,c1,c2}));
         return;
     }
     TuileTrax * left = terrain.getTuile(y,x-1);
@@ -129,9 +129,9 @@ void Trax::lineForcedPlays(int y, int x) {
         left != nullptr && right != nullptr
         && left->bords[1] == right->bords[3]
     ) {
-        int c1 = left->bords[1];
-        int c2 = (c1+1)%2;
-        placeTuile(y,x, new TuileTrax(vector<int>{c2,c1,c2,c1}));
+        BordColor c1 = left->bords[1];
+        BordColor c2 = c1 == white ? red : white;
+        placeTuile(y,x, new TuileTrax(vector<BordColor>{c2,c1,c2,c1}));
     } 
     return;
 }
@@ -211,7 +211,7 @@ void Trax::start(){
     Font font;
     font.loadFromFile("./resources/arial.ttf");
 
-    TuileTrax defaultTuile = TuileTrax(vector<int>{0,1,0,1});
+    TuileTrax defaultTuile = TuileTrax(vector<BordColor>{white,red,white,red});
     TuileTrax *pick = new TuileTrax(defaultTuile);
     
 
@@ -266,10 +266,10 @@ void Trax::start(){
                         } else if(flip_bounds.contains(mouse)) {
                             if(pick->bords[0] == pick->bords[1] || pick->bords[1] == pick->bords[2]) {
                                 // pick = tuile AABB avec n'importe quel rotation
-                                pick = new TuileTrax(vector<int>{0,1,0,1});
+                                pick = new TuileTrax(vector<BordColor>{white,red,white,red});
                             } else {
                                 // pick = tuile ABAB
-                                pick = new TuileTrax(vector<int>{0,0,1,1});
+                                pick = new TuileTrax(vector<BordColor>{white,white,red,red});
                             }
                         }
                         if(0 < mouse.x && mouse.x < DRAW_WIDTH-200 && 0 < mouse.y && mouse.y < DRAW_HEIGHT) {
