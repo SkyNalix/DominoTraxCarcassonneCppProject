@@ -19,7 +19,7 @@ void openMenuPrincipal(){
     texture.loadFromFile("./resources/Domino.jpg");
     Sprite menuDomino;
     menuDomino.setTexture(texture);
-    menuDomino.setScale(Vector2f(2.5,2.5));
+    menuDomino.setScale(Vector2f(2,2));
     menuDomino.move(Vector2f(25, 125));
     FloatRect domino_bounds = menuDomino.getGlobalBounds(); 
 
@@ -27,9 +27,17 @@ void openMenuPrincipal(){
     texture2.loadFromFile("./resources/Trax.jpg");
     Sprite menuTrax;
     menuTrax.setTexture(texture2);
-    menuTrax.setScale(Vector2f(2.5,2.5));
-    menuTrax.move(Vector2f(25, 325));
+    menuTrax.setScale(Vector2f(2,2));
+    menuTrax.move(Vector2f(25, 275));
     FloatRect trax_bounds = menuTrax.getGlobalBounds(); 
+
+    Texture texture3;
+    texture3.loadFromFile("./resources/Carcassonne.png");
+    Sprite menuCarcassonne;
+    menuCarcassonne.setTexture(texture3);
+    menuCarcassonne.setScale(Vector2f(2,2));
+    menuCarcassonne.move(Vector2f(25, 425));
+    FloatRect carcassonne_bounds = menuCarcassonne.getGlobalBounds(); 
 
 
     RenderWindow app(VideoMode(800, 600, 32), "Projet 2022 CPP ");
@@ -47,9 +55,13 @@ void openMenuPrincipal(){
                             app.close();
                             DominoCarre c{5,5};
                             c.start();
-                        }else if(trax_bounds.contains(mouse)){
+                        } else if(trax_bounds.contains(mouse)){
                             app.close();
                             Trax c{1};
+                            c.start();
+                        } else if(carcassonne_bounds.contains(mouse)){
+                            app.close();
+                            Carcassonne c{};
                             c.start();
                         }
                     }
@@ -59,6 +71,7 @@ void openMenuPrincipal(){
         app.draw(text);
         app.draw(menuDomino);
         app.draw(menuTrax);
+        app.draw(menuCarcassonne);
         app.display(); 
     } 
 }
@@ -68,7 +81,11 @@ void openMenuPrincipal(){
 int main() {
     srand(time(NULL));
     
-    openMenuPrincipal();
+    // openMenuPrincipal();
+
+    Carcassonne c{};
+    c.start();
+    
     return EXIT_SUCCESS;
 }
 

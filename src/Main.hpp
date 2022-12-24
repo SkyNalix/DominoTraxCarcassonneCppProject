@@ -3,6 +3,7 @@
 
 #include "DominoCarre/DominoCarre.hpp"
 #include "Trax/Trax.hpp"
+#include "Carcassonne/Carcassonne.hpp"
 
 using namespace std;
 

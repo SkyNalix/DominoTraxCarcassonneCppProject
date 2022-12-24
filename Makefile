@@ -1,4 +1,4 @@
-SRC_DIRS := src/common src/DominoCarre src/Trax src
+SRC_DIRS := src/common src/DominoCarre src/Trax src/Carcassonne src
 # ajouter les repertoires ici ^ 
 
 OBJ_DIR = ./obj
