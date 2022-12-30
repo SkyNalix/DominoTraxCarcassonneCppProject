@@ -1,15 +1,12 @@
 #ifndef MAIN_HPP
 #define MAIN_HPP
 
-#include <iostream>
-#include "DominoCarre.hpp"
+#include "DominoCarre/DominoCarre.hpp"
 #include "Trax/Trax.hpp"
-#include <SFML/Graphics.hpp>
+#include "Carcassonne/Carcassonne.hpp"
+
 using namespace std;
 
-class Main{
-    public :
-    static void openMenuPrincipal();
-};
+void openMenuPrincipal();
 
 #endif

@@ -3,20 +3,21 @@
 
 #include <iostream>
 #include <vector>
-#include "common/Bord.hpp"
 #include <SFML/Graphics.hpp>
+
 using namespace std;
 using namespace sf;
 
+enum BordColor { white, red };
 
 class TuileTrax {
-    private :
-        int bord;
     public :
-        TuileTrax(int &bord);
-        vector<Bord<vector<int>>> getBords() const;
-        Bord<vector<int>> getBord(const string& face) const;
+        vector<BordColor> bords;
+        TuileTrax(const vector<BordColor> &bords);
         void draw(RenderWindow *app, int start_x, int start_y, int ZONE_WIDTH, int ZONE_HEIGHT );
         void turn();
+        String toTexturePath();
 };
-Tuile* getRandomTuile();
+TuileTrax* getRandomTuileTrax();
+
+#endif 
