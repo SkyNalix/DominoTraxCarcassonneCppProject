@@ -553,12 +553,15 @@ void Trax::start(){
                 case Event::Closed:
                     app.close(); break;
                 case Event::MouseButtonPressed: {
-                    if (victory==-1 && event.mouseButton.button == sf::Mouse::Left) {
+                    if (event.mouseButton.button == sf::Mouse::Left) {
                         Vector2f mouse = app.mapPixelToCoords(Mouse::getPosition(app));
                         if(retour_bounds.contains(mouse)){
                             app.close();
                             openMenuPrincipal();
-                        } else if(turn_bounds.contains(mouse)){
+                        }
+                        if(victory != -1)
+                            break;
+                        if(turn_bounds.contains(mouse)){
                             pick->turn();
                         } else if(flip_bounds.contains(mouse)) {
                             if(pick->bords[0] == pick->bords[1] || pick->bords[1] == pick->bords[2]) {

@@ -81,10 +81,7 @@ void openMenuPrincipal(){
 int main() {
     srand(time(NULL));
     
-    // openMenuPrincipal();
-
-    Carcassonne c{};
-    c.start();
+    openMenuPrincipal();
     
     return EXIT_SUCCESS;
 }
