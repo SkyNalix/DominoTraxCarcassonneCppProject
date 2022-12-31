@@ -1,16 +1,24 @@
 #include "Carcassonne.hpp"
 
 
+
+
 #define stringify( name ) #name
+vector<string> string_of_direction {
+    stringify(TOP),
+    stringify(RIGHT),
+    stringify(BOTTOM),
+    stringify(LEFT)
+};
+
 vector<string> string_of_tilebord {
     stringify(GRASS),
+    stringify(PATH),
+    stringify(START_PATH),
+    stringify(ABBEY),
     stringify(CITY),
     stringify(PROT_CITY),
-    stringify(SOLO_CITY),
-    stringify(JUNCTION),
-    stringify(ABBEY),
-    stringify(START_PATH),
-    stringify(PATH), 
+    stringify(SOLO_CITY) 
 };
 
 vector<string> string_of_tile {
@@ -69,7 +77,6 @@ vector<vector<Tile_Bord>> tile_bords_list {
     {CITY,CITY,GRASS,CITY} // T_CITY
 };
 
-
 vector<IntRect> tiles_rect {};
 
 void loadTiles() {
@@ -113,15 +120,28 @@ map<Tile, int> default_available_tiles{
 
 Carcassonne::Carcassonne() : available_tiles{default_available_tiles} {}
 
-
 TuileCarcassonne* Carcassonne::getRandomTuileCarcassonne() {
-    Tile tile; //temp
-    do {
-        tile = static_cast<Tile>(rand() % 24);
-    } while(available_tiles[tile] == 0);
-    TuileCarcassonne *tuile = new TuileCarcassonne(tile);
-    tuile->bords = tile_bords_list[tuile->tile];
-    return tuile;
+    vector<int> positions {};
+    for(int i = 0; i < 24; i++ ) {
+        positions.push_back(i);
+    }
+    // shuffling
+    for(int i = 0; i < 24; i++ ) {
+        int j = rand() % 24;
+        int tmp = positions[i];
+        positions[i] = positions[j];
+        positions[j] = tmp;
+    }
+    // selecting the first tile available
+    for(int i = 0; i < 24; i++ ) {
+        Tile tile = static_cast<Tile>(positions[i]);
+        if(available_tiles[tile] != 0) {     
+            TuileCarcassonne *tuile = new TuileCarcassonne(tile);
+            tuile->initBords(tile_bords_list[tuile->tile]);
+            return tuile;
+        }
+    }
+    return nullptr;
 }
 
 
@@ -148,7 +168,6 @@ Tile_Bord simplifyTileBord(Tile_Bord b1) {
 // return false si le placement a echoué, true sinon
 bool Carcassonne::tryPlaceTuile(int y, int x, TuileCarcassonne *tuile) {
     if(getTuile(y,x) != nullptr) {
-        cout << "exit 1\n" << endl;;
         return false;
     }
     
@@ -158,66 +177,34 @@ bool Carcassonne::tryPlaceTuile(int y, int x, TuileCarcassonne *tuile) {
     TuileCarcassonne *left = getTuile(y,x-1);
 
     if(top == nullptr && right == nullptr && bottom == nullptr && left == nullptr ) {
-        cout << "exit 2\n" << endl;;
         return false;
     }
 
     if(top != nullptr) {
-        if( simplifyTileBord(top->bords[2])
-                        != simplifyTileBord(tuile->bords[0])) {
-            cout << "exit top " 
-                    << string_of_tilebord[tile_bords_list[top->tile][2]]
-                    << "(" << string_of_tile[top->tile] << ")"
-                    << " != "
-                    << string_of_tilebord[tuile->bords[0]]
-                    << "(" << string_of_tile[tuile->tile] << ")"
-                     << endl;
+        if( simplifyTileBord(top->bords[BOTTOM].tile)
+                        != simplifyTileBord(tuile->bords[TOP].tile)) {
             return false;
         }
     }
     if(right != nullptr) {
-        if( simplifyTileBord(right->bords[3])
-                        != simplifyTileBord(tuile->bords[1])) {
-            cout << "exit right " 
-                    << string_of_tilebord[tile_bords_list[right->tile][3]]
-                    << "(" << string_of_tile[right->tile] << ")"
-                    << " != "
-                    << string_of_tilebord[tuile->bords[1]] 
-                    << "(" << string_of_tile[tuile->tile] << ")"
-                    << endl;
+        if( simplifyTileBord(right->bords[3].tile)
+                        != simplifyTileBord(tuile->bords[1].tile)) {
             return false;
         }
     }
     if(bottom != nullptr) {
 
-
-
-        if( simplifyTileBord(bottom->bords[0])
-                        != simplifyTileBord(tuile->bords[2])) {
-            cout << "exit bottom " 
-                    << string_of_tilebord[tile_bords_list[bottom->tile][0]]
-                    << "(" << string_of_tile[bottom->tile] << ")"
-                    << " != "
-                    << string_of_tilebord[tuile->bords[2]]
-                    << "(" << string_of_tile[tuile->tile] << ")"
-                    << endl;
+        if( simplifyTileBord(bottom->bords[0].tile)
+                        != simplifyTileBord(tuile->bords[2].tile)) {
             return false;
         }
     }
     if(left != nullptr) {
-        if( simplifyTileBord(left->bords[1])
-                        != simplifyTileBord(tuile->bords[3])) {
-            cout << "exit left " 
-                    << string_of_tilebord[tile_bords_list[left->tile][1]]
-                    << "(" << string_of_tile[left->tile] << ")"
-                    << " != "
-                    << string_of_tilebord[tuile->bords[3]]
-                    << "(" << string_of_tile[tuile->tile] << ")"
-                    << endl;
+        if( simplifyTileBord(left->bords[1].tile)
+                        != simplifyTileBord(tuile->bords[3].tile)) {
             return false;
         }
     }
-    printf("TRUE\n");
     return true;
 }
 
@@ -232,16 +219,108 @@ bool Carcassonne::placeTuile(int y, int x, TuileCarcassonne* tuile) {
     return true;
 }
 
-
-int Carcassonne::checkVictory() {
-    return -1;
+void Carcassonne::closeApp(RenderWindow *app) {
+    app->close();
+    openMenuPrincipal();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// tuile = tuile courante
+// bord = quelle partie je regarde : ville, chemin...
+// direction = là d'où je suis arrivé
+// retourne couple (score, partisant trouvé);
+tuple <int, CarColor> Carcassonne::calculScore_rec(TuileCarcassonne *tuile, int score, 
+                    Tile_Bord bord, Direction direction) {
+    if(tuile == nullptr || tuile->bords[direction].marque || bord != simplifyTileBord(tuile->bords[direction].tile))
+        return make_tuple(score, NONE);
+
+    tuple <int, CarColor> res;
+    CarColor partisant = tuile->bords[direction].partisant;
+
+    tuile->bords[direction].marque = true;
+    Tile_Bord direction_bord = tuile->bords[direction].tile;
+    Tile_Bord simpl_direction_bord = simplifyTileBord(direction_bord);
+
+    score += simpl_direction_bord == CITY ? 2 : 1;
+    if(direction_bord == SOLO_CITY || direction_bord == START_PATH || direction_bord == ABBEY){
+        return make_tuple(score, tuile->bords[direction].partisant);
+    }
+    if(direction != TOP && simplifyTileBord(tuile->bords[TOP].tile) == bord) {
+        tuple <int, CarColor> res_top = calculScore_rec(getTuile(tuile->y-1,tuile->x),score,bord,BOTTOM);
+        if( get<1>(res_top) != NONE) 
+            partisant = get<1>(res_top);
+        tuile->bords[TOP].marque = true;
+        score += get<0>(res_top) + bord == CITY ? 2 : 1;
+    }
+    if(direction != BOTTOM && simplifyTileBord(tuile->bords[BOTTOM].tile) == bord) {
+        tuple <int, CarColor> res_bottom = calculScore_rec(getTuile(tuile->y+1,tuile->x),score,bord,TOP);
+        if( get<1>(res_bottom) != NONE) 
+            partisant = get<1>(res_bottom);
+        tuile->bords[BOTTOM].marque = true;
+        score += get<0>(res_bottom) + bord == CITY ? 2 : 1;
+    }
+    if(direction != RIGHT && simplifyTileBord(tuile->bords[RIGHT].tile) == bord) {
+        tuple <int, CarColor> res_right = calculScore_rec(getTuile(tuile->y,tuile->x+1),score,bord,LEFT);
+        if( get<1>(res_right) != NONE) 
+            partisant = get<1>(res_right);
+        tuile->bords[RIGHT].marque = true;
+        score += get<0>(res_right) + bord == CITY ? 2 : 1 ;
+    }
+    if(direction != LEFT && simplifyTileBord(tuile->bords[LEFT].tile) == bord) {
+        tuple <int, CarColor> res_left = calculScore_rec(getTuile(tuile->y,tuile->x+1),score,bord,RIGHT);
+        if( get<1>(res_left) != NONE) 
+            partisant = get<1>(res_left);
+        tuile->bords[LEFT].marque = true;
+        score += get<0>(res_left) + bord == CITY ? 2 : 1;
+    }
+    return make_tuple(score,partisant);
+}
+
+void Carcassonne::calculScore(int y, int x, TuileCarcassonne *tuile) {
+
+    for(int i = 0; i<4; i++)
+        tuile->bords[i].marque = true;
+
+    tuple <int, CarColor> res_top = calculScore_rec(getTuile(y-1,x), 1, 
+                                    simplifyTileBord(tuile->bords[TOP].tile), BOTTOM);
+    if(get<1>(res_top)!=NONE) scores[get<1>(res_top)] += get<0>(res_top);
+    tuple <int, CarColor> res_bottom = calculScore_rec(getTuile(y+1,x), 1, 
+                                    simplifyTileBord(tuile->bords[BOTTOM].tile), TOP);
+    if(get<1>(res_bottom)!=NONE) scores[get<1>(res_bottom)] += get<0>(res_bottom);
+    tuple <int, CarColor> res_right = calculScore_rec(getTuile(y,x+1), 1, 
+                                    simplifyTileBord(tuile->bords[RIGHT].tile), LEFT);
+    if(get<1>(res_right) != NONE) scores[get<1>(res_right)] += get<0>(res_right);
+    tuple <int, CarColor> res_left = calculScore_rec(getTuile(y,x-1), 1, 
+                                    simplifyTileBord(tuile->bords[LEFT].tile), RIGHT);
+    if(get<1>(res_left)!=NONE) scores[get<1>(res_left)] += get<0>(res_left);
+}
+
+
+// calcule la distance entre deux points 
+int getDistance(Vector2i start, Vector2i end) {
+    return sqrt(pow(start.x - end.x, 2) + pow(start.y - end.y, 2));
+}
+
 
 void Carcassonne::start(){
 
     loadTiles();
-
-    int victory = -1;
+    for(int i =0; i < 4; i++ )
+        scores.push_back(0);
+    bool victory = false;
 
     int DRAW_WIDTH = 900;
     int DRAW_HEIGHT = 700;
@@ -254,24 +333,10 @@ void Carcassonne::start(){
     font.loadFromFile("./resources/arial.ttf");
 
     TuileCarcassonne *defaultTuile = new TuileCarcassonne(T_JUNCTION);
-    defaultTuile->bords = tile_bords_list[defaultTuile->tile];
+    defaultTuile->initBords(tile_bords_list[defaultTuile->tile]);
     defaultTuile->x = 0; defaultTuile->y = 0;
     tuiles.push_back(defaultTuile);
-    TuileCarcassonne *t1 = new TuileCarcassonne(T_CITY_GATE_AT_BOTTOM_PROTECTED);
-    t1->bords = tile_bords_list[t1->tile];
-    t1->x = 0; t1->y = -1;
-    tuiles.push_back(t1);
-    t1 = new TuileCarcassonne(T_CITY_ON_TOP_PATH_BOTTOM_LEFT);
-    t1->bords = tile_bords_list[t1->tile];
-    t1->turn(); t1->turn();
-    t1->x = -1; t1->y = 0;
-    tuiles.push_back(t1);
-
-    // TuileCarcassonne *pick = getRandomTuileCarcassonne();
-    TuileCarcassonne *pick = new TuileCarcassonne(T_CITY_ON_TOP_PATHS_BOTTOM_RIGHT);
-    pick->bords = tile_bords_list[pick->tile];
-    
-
+    TuileCarcassonne *pick = getRandomTuileCarcassonne();
 
     Texture retour_texture;
     retour_texture.loadFromFile("./resources/Retour.jpg");
@@ -286,7 +351,7 @@ void Carcassonne::start(){
     Sprite turn_sprite;
     turn_sprite.setTexture(turn_texture);
     turn_sprite.setScale(0.3, 0.3);
-    turn_sprite.setPosition(controller_start_x+(controller_width*0.25),300);
+    turn_sprite.setPosition(controller_start_x+(controller_width*0.25),200);
     FloatRect turn_bounds = turn_sprite.getGlobalBounds();
 
     Texture cross_texture;
@@ -306,7 +371,7 @@ void Carcassonne::start(){
 
 
     Texture tilemap;
-    tilemap.loadFromFile("resources/carcassonne_tilemap.png");
+    tilemap.loadFromFile("resources/carcassonne/carcassonne_tilemap.png");
     float tilemapscale = ((float)block_length)/256.0 ;
 
     Sprite pick_sprite;
@@ -314,11 +379,22 @@ void Carcassonne::start(){
     pick_sprite.scale(0.5,0.5);
     pick_sprite.setPosition(controller_start_x + 80, 120);
     pick_sprite.setTextureRect(tiles_rect[pick->tile]);
-
     pick_sprite.setOrigin(
             pick_sprite.getLocalBounds().width / 2.f, 
                     pick_sprite.getLocalBounds().height / 2.f
             );
+
+    Texture partisant_texture;
+    partisant_texture.loadFromFile("resources/carcassonne/partisant_"+ carColorToString(player)+".png");
+    Sprite partisant_sprite;
+    partisant_sprite.setTexture(partisant_texture);
+    partisant_sprite.scale(1,1);
+    partisant_sprite.setPosition(controller_start_x + 80, 300);
+    FloatRect partisant_bound = partisant_sprite.getGlobalBounds();
+
+    bool partisant_placing = false;
+    bool placed_tuile = false;
+    bool calcul_done = false;
 
     int tiles_start_x = -2;
     int tiles_start_y = -2;
@@ -329,7 +405,7 @@ void Carcassonne::start(){
         while (app.pollEvent(event)){
             switch (event.type) {
                 case Event::Closed:
-                    app.close(); break;
+                    closeApp(&app); break;
                 case Event::KeyPressed : {
                     if(event.key.code == Keyboard::Left && tiles_start_x > -20)
                         tiles_start_x--;
@@ -350,38 +426,96 @@ void Carcassonne::start(){
                     break;
                 }
                 case Event::MouseButtonPressed: {
-                    if (victory==-1 && event.mouseButton.button == sf::Mouse::Left) {
+                    if (event.mouseButton.button == sf::Mouse::Right) {
+                        // TODO enlever tous ce if
+                        calcul_done = false;
+                        victory = true;
+                        
+                    } else
+                    if (event.mouseButton.button == sf::Mouse::Left) {
                         Vector2f mouse = app.mapPixelToCoords(Mouse::getPosition(app));
                         if(retour_bounds.contains(mouse)){
-                            app.close();
-                            openMenuPrincipal();
-                        } else if(cross_bounds.contains(mouse)) {
-                            
+                            closeApp(&app);
+                        }
+                        if(victory)
+                            break;
+                        
+                        if(cross_bounds.contains(mouse)) {
+                            placed_tuile = false;
+                            switch(player) {
+                                case RED: player = YELLOW; break;
+                                case YELLOW: player = GREEN; break;
+                                case GREEN: player = BLUE; break;
+                                case BLUE: player = RED; break;
+                                default: break;
+                            }
+                            player_text.setString("Joueur " + carColorToString(player));
                             pick = getRandomTuileCarcassonne();
-                            pick_sprite.setTextureRect(tiles_rect[pick->tile]);
-                            pick_sprite.setRotation(0);  
+                            if(pick == nullptr) {
+                                victory = true;
+                            } else {
+                                pick_sprite.setTextureRect(tiles_rect[pick->tile]);
+                                pick_sprite.setRotation(0); 
 
-                        } else if(turn_bounds.contains(mouse)){
+                                partisant_texture.loadFromFile("resources/carcassonne/partisant_"
+                                        +carColorToString(player)+".png");
+                                partisant_sprite.setTexture(partisant_texture);
+                            }
+                        } else if(!placed_tuile && turn_bounds.contains(mouse)){
                             pick->turn();
                             pick_sprite.setRotation(90*pick->rotation);       
+                        } else if(placed_tuile && partisant_bound.contains(mouse)) {
+                            partisant_placing = !partisant_placing;
                         }
                         if(0 < mouse.x && mouse.x < DRAW_WIDTH-200 && 0 < mouse.y && mouse.y < DRAW_HEIGHT) {
 
-                            int x = (mouse.x / block_length);
-                            int y = (mouse.y / block_length);
+                            int x = mouse.x / block_length;
+                            int y = mouse.y / block_length;
                             x+= tiles_start_x - (x<0 ? 1 : 0); 
                             y+= tiles_start_y - (y<0 ? 1 : 0);
-                            
-                            if(placeTuile(y,x, pick)) {
 
+                            if(!placed_tuile && !partisant_placing && placeTuile(y,x, pick)) {
+                                placed_tuile = true;
                                 available_tiles[pick->tile] = available_tiles[pick->tile]-1;
-                                pick = getRandomTuileCarcassonne();
-                                pick_sprite.setTextureRect(tiles_rect[pick->tile]);
+                            } else if(partisant_placing == true 
+                                && pick->x==x && pick->y==y ) {
 
-                                // player = (player+1) %2;
-                                // string player_str = player==0 ? "blanc" : "rouge";
-                                // player_text.setString("Joueur " + player_str);
-                                // victory = checkVictory();
+                                Vector2i mouse_point( ((int)mouse.x) % block_length,  ((int)mouse.y) % block_length);
+                                int distance_top = getDistance(mouse_point, Vector2i(block_length/2, block_length/4));
+                                int distance_bottom = getDistance(mouse_point, Vector2i(block_length/2, block_length-(block_length/4)));
+                                int distance_right = getDistance(mouse_point, Vector2i( block_length/4, block_length/2 ) );
+                                int distance_left = getDistance(mouse_point, Vector2i( block_length-(block_length/4), block_length/2 ) );
+
+                                int distance = distance_top;
+                                TuileCarcassonne *tuile_voisin = getTuile(y-1,x);
+                                Direction side = TOP;
+                                if(distance > distance_bottom) { 
+                                    side = BOTTOM;
+                                    tuile_voisin = getTuile(y+1,x);
+                                    distance = distance_bottom;
+                                }
+                                if(distance > distance_left) {
+                                    side = RIGHT;
+                                    tuile_voisin = getTuile(y,x+1);
+                                    distance = distance_left;
+                                }
+                                else if(distance > distance_right) {
+                                    side = LEFT;
+                                    tuile_voisin = getTuile(y,x-1);
+                                }
+                                if(pick->bords[side].partisant == NONE && pick->bords[side].tile != PROT_CITY) {
+                                    // on reutilise cette méthode ici pour voir si il existe deja un partisant
+                                    // dans la zone où on veut placer le partisant actuel
+                                    pick->bords[side].marque = true;
+                                    tuple <int, CarColor> res = calculScore_rec(tuile_voisin, 0, 
+                                                                    simplifyTileBord(pick->bords[side].tile),
+                                                                    static_cast<Direction>((side+1)%4));
+                                    if(get<1>(res)==NONE) 
+                                        pick->bords[side].partisant = player;
+                                    pick->bords[side].marque = false;
+
+                                    partisant_placing = false;
+                                }
                             }
                         }
                     } 
@@ -415,7 +549,6 @@ void Carcassonne::start(){
             sprite.scale(tilemapscale,tilemapscale);
             sprite.setTextureRect(tiles_rect[tuile->tile]);
             sprite.setPosition(block_length*x, block_length*y);
-
             if(tuile->rotation > 0) {
                 sprite.setOrigin(
                         sprite.getLocalBounds().width / 2.f, 
@@ -425,6 +558,36 @@ void Carcassonne::start(){
                 sprite.move(block_length/2, block_length/2);
             }
             app.draw(sprite);
+
+            // affichage des partisants
+            for(size_t i = 0; i<tuile->bords.size(); i++ ) {
+                CarColor partisant = tuile->bords[i].partisant;
+                if(partisant==NONE)
+                    continue;
+                Texture texture;
+                texture.loadFromFile("resources/carcassonne/partisant_"
+                                +carColorToString(partisant)+".png");
+                Sprite sprite;
+                sprite.setTexture(texture);
+                sprite.scale(tilemapscale/2,tilemapscale/2);
+                int pos_x = block_length*x;
+                int pos_y = block_length*y;
+                if(i == 0) { // partisant en haut
+                    pos_x += (block_length*0.8)/2;
+                    pos_y += (block_length*0.5)/4;
+                } else if(i == 1) { // partisant a droite
+                    pos_x += block_length-(block_length/4);
+                    pos_y += (block_length*0.8)/2;
+                } else if(i == 2) { // en dessous
+                    pos_x += (block_length*0.8)/2;
+                    pos_y += block_length - (block_length/4);
+                } else if(i == 3) { // a gauche
+                    pos_x += (block_length*0.5)/4;
+                    pos_y += (block_length*0.8)/2;
+                }
+                sprite.setPosition(pos_x, pos_y);
+                app.draw(sprite);
+            }
         }
 
         // affichage des controlles
@@ -432,13 +595,59 @@ void Carcassonne::start(){
         app.draw(pick_sprite);
         
 
-        if(victory > -1) {
+        if(victory) {
             // TODO victory
+            if(!calcul_done) {
+                for(size_t i = 0; i < tuiles.size(); i++)
+                    for(int j = 0; j<4; j++) 
+                        tuiles[i]->bords[j].marque = false;
+                for(size_t i = 0; i < tuiles.size(); i++)
+                    calculScore(tuiles[i]->y,tuiles[i]->x,tuiles[i]);
+                calcul_done = true;
+            }
+
+            CarColor winner = RED;
+            string winner_str = "rouge";
+            if(scores[winner] < scores[GREEN] ) {
+                winner = GREEN;
+                winner_str = "vert";
+            }
+            if(scores[winner] < scores[YELLOW] ) {
+                winner = YELLOW;
+                winner_str = "jaune";
+            }
+            if(scores[winner] < scores[BLUE] ) {
+                winner_str = "bleu";
+            }
+
+            RectangleShape rect(Vector2f(controller_start_x*0.50, DRAW_HEIGHT*0.25));
+            rect.move(controller_start_x*0.25, DRAW_HEIGHT*0.40);
+            app.draw(rect);
+
+            Text text;
+            text.setFont(font);
+            text.setString("Joueur " + winner_str + " a gagne!");
+            text.setCharacterSize(30);
+            text.setFillColor(Color::Black);
+            text.move(controller_start_x*0.3, DRAW_HEIGHT*0.44);
+            app.draw(text);
+            
+        }
+
+        if(partisant_placing) {
+            Text partisant_text;
+            partisant_text.setFont(font);
+            partisant_text.setString("Placement du partisant");
+            partisant_text.setFillColor(Color::Black);
+            partisant_text.setCharacterSize(18);
+            partisant_text.setPosition(controller_start_x+20, 380);
+            app.draw(partisant_text);
         }
         
         app.draw(retour_sprite);
         app.draw(turn_sprite);
         app.draw(cross_sprite);
+        app.draw(partisant_sprite);
         app.display();
     } 
 }
