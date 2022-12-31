@@ -35,10 +35,24 @@ enum Tile {
     T_CITY = 23
 };
 
-
-
 enum Tile_Bord {
-    GRASS, CITY, PROT_CITY, SOLO_CITY, JUNCTION, ABBEY, START_PATH, PATH 
+    GRASS, PATH, START_PATH, ABBEY, CITY, PROT_CITY, SOLO_CITY 
+};
+enum Direction {
+    TOP = 0, RIGHT = 1, BOTTOM = 2, LEFT = 3 
+};
+
+
+enum CarColor { RED = 0, YELLOW = 1, GREEN = 2, BLUE = 3, NONE = 4 };
+string carColorToString(CarColor c);
+
+
+class BordCarcassonne {
+    public:
+        Tile_Bord tile;
+        CarColor partisant = NONE;
+        bool marque = false;
+        BordCarcassonne(Tile_Bord tile);
 };
 
 class TuileCarcassonne {
@@ -47,9 +61,10 @@ class TuileCarcassonne {
         int y = 0;
         int rotation = 0; // *90°, 0 = pas de rotation, max 3 par ordre chronologique
         Tile tile;
-        vector<Tile_Bord> bords;
+        vector<BordCarcassonne> bords;
         TuileCarcassonne(Tile tile);
         void turn(); 
+        void initBords(vector<Tile_Bord> v);
 };
 
 #endif 
