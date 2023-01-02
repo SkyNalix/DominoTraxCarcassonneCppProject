@@ -1,54 +1,5 @@
 #include "Carcassonne.hpp"
 
-
-
-
-#define stringify( name ) #name
-vector<string> string_of_direction {
-    stringify(TOP),
-    stringify(RIGHT),
-    stringify(BOTTOM),
-    stringify(LEFT)
-};
-
-vector<string> string_of_tilebord {
-    stringify(GRASS),
-    stringify(PATH),
-    stringify(START_PATH),
-    stringify(ABBEY),
-    stringify(CITY),
-    stringify(PROT_CITY),
-    stringify(SOLO_CITY) 
-};
-
-vector<string> string_of_tile {
-    stringify(T_CITY_GATE_AT_BOTTOM),
-    stringify(T_PATH_TOP_BOTTOM),
-    stringify(T_CITY_ON_TOP_JUNCTION),
-    stringify(T_CITY_DIAGONAL),
-    stringify(T_CITY_ON_TOP_PATHS_LEFT_RIGHT),
-    stringify(T_CITY_ON_TOP_PATHS_BOTTOM_RIGHT),
-    stringify(T_CITY_DIAGONAL_PATH_BOTTOM_RIGHT),
-    stringify(T_CITY_GATE_AT_BOTTOM_PROTECTED),
-    stringify(T_CITY_ON_TOP),
-    stringify(T_CITY_ON_TOP_OTHER_LEFT),
-    stringify(T_CITY_ON_LEFT_RIGHT_PROTECTED ),
-    stringify(T_CITY_ON_TOP_PATH_BOTTOM_LEFT ),
-    stringify(T_JUNCTION ),
-    stringify(T_CITY_ON_TOP_OTHER_BOTTOM),
-    stringify(T_CITY_PROTECTED ),
-    stringify(T_PATH_BOTTOM_LEFT ),
-    stringify(T_JUNCTION_BOTTOM_LEFT_RIGHT ),
-    stringify(T_ABBEY ),
-    stringify(T_ABBEY_PATH_BOTTOM ),
-    stringify(T_FULL_CITY_PROTECTED ),
-    stringify(T_CITY_ON_LEFT_RIGHT ),
-    stringify(T_CITY_DIAGONAL_PROTECTED ),
-    stringify(T_CITY_DIAGONAL_PATH_BOTTOM_RIGHT_PROTECTED ),
-    stringify(T_CITY)
-};
-
-
 // Nord, est, sud, ouest, centre
 vector<vector<Tile_Bord>> tile_bords_list {
     {CITY,CITY,START_PATH,CITY}, // T_CITY_GATE_AT_BOTTOM
