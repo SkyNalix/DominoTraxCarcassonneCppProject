@@ -362,6 +362,14 @@ void Carcassonne::start(){
     cross_sprite.setPosition(controller_start_x+(controller_width*0.25),430);
     FloatRect cross_bounds = cross_sprite.getGlobalBounds();
 
+    Texture end_texture;
+    end_texture.loadFromFile("./resources/end.png");
+    Sprite end_sprite;
+    end_sprite.setTexture(end_texture);
+    end_sprite.setScale(1, 1);
+    end_sprite.setPosition(controller_start_x+(controller_width*0.25),520);
+    FloatRect end_bounds = end_sprite.getGlobalBounds();
+
     Text player_text;
     player_text.setFont(font);
     player_text.setString("Joueur 1");
@@ -377,11 +385,11 @@ void Carcassonne::start(){
     Sprite pick_sprite;
     pick_sprite.setTexture(tilemap);
     pick_sprite.scale(0.5,0.5);
-    pick_sprite.setPosition(controller_start_x + 80, 120);
+    pick_sprite.setPosition(controller_start_x+100, 120);
     pick_sprite.setTextureRect(tiles_rect[pick->tile]);
     pick_sprite.setOrigin(
             pick_sprite.getLocalBounds().width / 2.f, 
-                    pick_sprite.getLocalBounds().height / 2.f
+            pick_sprite.getLocalBounds().height / 2.f
             );
 
     Texture partisant_texture;
@@ -389,7 +397,7 @@ void Carcassonne::start(){
     Sprite partisant_sprite;
     partisant_sprite.setTexture(partisant_texture);
     partisant_sprite.scale(1,1);
-    partisant_sprite.setPosition(controller_start_x + 80, 300);
+    partisant_sprite.setPosition(controller_start_x+(controller_width*0.25), 300);
     FloatRect partisant_bound = partisant_sprite.getGlobalBounds();
 
     bool partisant_placing = false;
@@ -427,10 +435,18 @@ void Carcassonne::start(){
                 }
                 case Event::MouseButtonPressed: {
                     if (event.mouseButton.button == sf::Mouse::Right) {
-                        // TODO enlever tous ce if
-                        calcul_done = false;
                         victory = true;
-                        
+                        for(size_t i = 0; i < tuiles.size(); i++)
+                            for(int j = 0; j<4; j++) 
+                                tuiles[i]->bords[j].marque = false;
+                        for(size_t i = 0; i < tuiles.size(); i++)
+                            calculScore(tuiles[i]->y,tuiles[i]->x,tuiles[i]);
+                        cout << "scores: "
+                            << carColorToString(RED) << ": " << scores[RED] << "\n\t"
+                            << carColorToString(YELLOW) << ": " << scores[YELLOW] << "\n\t"
+                            << carColorToString(BLUE) << ": " << scores[BLUE] << "\n\t"
+                            << carColorToString(GREEN) << ": " << scores[GREEN] << "\n";
+                        calcul_done = true;
                     } else
                     if (event.mouseButton.button == sf::Mouse::Left) {
                         Vector2f mouse = app.mapPixelToCoords(Mouse::getPosition(app));
@@ -440,7 +456,11 @@ void Carcassonne::start(){
                         if(victory)
                             break;
                         
-                        if(cross_bounds.contains(mouse)) {
+                        if(!placed_tuile && cross_bounds.contains(mouse)) {
+                            pick = getRandomTuileCarcassonne();
+                            pick_sprite.setTextureRect(tiles_rect[pick->tile]);
+                            pick_sprite.setRotation(0); 
+                        } else if(placed_tuile && end_bounds.contains(mouse)) {
                             placed_tuile = false;
                             switch(player) {
                                 case RED: player = YELLOW; break;
@@ -487,33 +507,20 @@ void Carcassonne::start(){
                                 int distance_left = getDistance(mouse_point, Vector2i( block_length-(block_length/4), block_length/2 ) );
 
                                 int distance = distance_top;
-                                TuileCarcassonne *tuile_voisin = getTuile(y-1,x);
                                 Direction side = TOP;
                                 if(distance > distance_bottom) { 
                                     side = BOTTOM;
-                                    tuile_voisin = getTuile(y+1,x);
                                     distance = distance_bottom;
                                 }
                                 if(distance > distance_left) {
                                     side = RIGHT;
-                                    tuile_voisin = getTuile(y,x+1);
                                     distance = distance_left;
                                 }
                                 else if(distance > distance_right) {
                                     side = LEFT;
-                                    tuile_voisin = getTuile(y,x-1);
                                 }
                                 if(pick->bords[side].partisant == NONE && pick->bords[side].tile != PROT_CITY) {
-                                    // on reutilise cette méthode ici pour voir si il existe deja un partisant
-                                    // dans la zone où on veut placer le partisant actuel
-                                    pick->bords[side].marque = true;
-                                    tuple <int, CarColor> res = calculScore_rec(tuile_voisin, 0, 
-                                                                    simplifyTileBord(pick->bords[side].tile),
-                                                                    static_cast<Direction>((side+1)%4));
-                                    if(get<1>(res)==NONE) 
-                                        pick->bords[side].partisant = player;
-                                    pick->bords[side].marque = false;
-
+                                    pick->bords[side].partisant = player;
                                     partisant_placing = false;
                                 }
                             }
@@ -596,7 +603,6 @@ void Carcassonne::start(){
         
 
         if(victory) {
-            // TODO victory
             if(!calcul_done) {
                 for(size_t i = 0; i < tuiles.size(); i++)
                     for(int j = 0; j<4; j++) 
@@ -607,18 +613,22 @@ void Carcassonne::start(){
             }
 
             CarColor winner = RED;
-            string winner_str = "rouge";
+            string winner_str = "Joueur rouge a gagne";
             if(scores[winner] < scores[GREEN] ) {
                 winner = GREEN;
-                winner_str = "vert";
+                winner_str = "Joueur vert a gagne";
             }
             if(scores[winner] < scores[YELLOW] ) {
                 winner = YELLOW;
-                winner_str = "jaune";
+                winner_str = "Joueur jaune a gagne";
             }
             if(scores[winner] < scores[BLUE] ) {
-                winner_str = "bleu";
+                winner_str = "Joueur bleu a gagne";
             }
+            if(
+                scores[RED] == scores[GREEN] &&
+                scores[GREEN] == scores[YELLOW] && scores[YELLOW] ==  scores[BLUE])
+                winner_str = "Egalite";
 
             RectangleShape rect(Vector2f(controller_start_x*0.50, DRAW_HEIGHT*0.25));
             rect.move(controller_start_x*0.25, DRAW_HEIGHT*0.40);
@@ -626,12 +636,11 @@ void Carcassonne::start(){
 
             Text text;
             text.setFont(font);
-            text.setString("Joueur " + winner_str + " a gagne!");
+            text.setString(winner_str);
             text.setCharacterSize(30);
             text.setFillColor(Color::Black);
             text.move(controller_start_x*0.3, DRAW_HEIGHT*0.44);
             app.draw(text);
-            
         }
 
         if(partisant_placing) {
@@ -648,6 +657,7 @@ void Carcassonne::start(){
         app.draw(turn_sprite);
         app.draw(cross_sprite);
         app.draw(partisant_sprite);
+        app.draw(end_sprite);
         app.display();
     } 
 }

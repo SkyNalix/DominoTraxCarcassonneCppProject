@@ -80,9 +80,7 @@ void openMenuPrincipal(){
 
 int main() {
     srand(time(NULL));
-    
     openMenuPrincipal();
-    
     return EXIT_SUCCESS;
 }
 
