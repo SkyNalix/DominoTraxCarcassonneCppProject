@@ -137,13 +137,19 @@ void Trax::lineForcedPlays(int y, int x) {
 }
 
 
-void Trax::doAllForcedPlays() {
+void Trax::doAllForcedPlays(vector<tuple<int,int>> liste) {
     for(int y = 0 ; y < terrain.height; y++) {
         for(int x = 0; x < terrain.width; x++) {
-            if(terrain.getTuile(y,x) == nullptr)
+            if(terrain.getTuile(y,x) == nullptr){
+                tuple<int,int> a = {y,x};  
+                liste.push_back(a);
                 angleForcedPlays(y,x);
-            if(terrain.getTuile(y,x) == nullptr)
+            }
+            if(terrain.getTuile(y,x) == nullptr){
+                tuple<int,int> a = {y,x};
+                liste.push_back(a);
                 lineForcedPlays(y,x);
+            }
         }
     }
 }
@@ -157,47 +163,338 @@ vector<tuple<int, TuileTrax *>> unionLists(vector<tuple<int, TuileTrax *>> a, ve
     return a;
 }
 
-/*
-bool listContainTuile(vector<tuple<int, TuileTrax *>> l, tuple<int, TuileTrax *> *t) {
-    for(size_t i = 0; i < l.size(); i++ ) {
-        if(get<0>(l[i]) == get<0>(*t))
-            return true;
-    }
-    return false;
-}
-
-tuple <bool, vector<tuple<int, TuileTrax *>>> Trax::checkVictoryOnPath
-        (vector<tuple<int, TuileTrax *>> visited,
-                int player,
-                tuple<int, TuileTrax *> current
-                 ) {
-
-    if(get<1>(current) == nullptr || listContainTuile(visited, &current)) 
-                return make_tuple(true, visited);
-}
-*/
-
 // cherche et renvoi un joueur gagnant
-int Trax::checkVictory() {
-    /*
-    vector<tuple<int, TuileTrax *>> visited{};
-    for(int y = 0; y < terrain.height; y++) {
-        for(int x = 0; x < terrain.getWidth(); x++) {
-            TuileTrax* tuile = terrain.getTuile(y,x);
-            int player = 0;
-            tuple<int, TuileTrax *> current = make_tuple(player, tuile);
-            if(tuile == nullptr || listContainTuile(visited, &current)) continue;
-        
-            tuple <bool, vector<tuple<int, TuileTrax *>>> path_search 
-                    = checkVictoryOnPath({}, player, current);
-            if( get<0>(path_search)) 
-                return player;
-            visited = unionLists(visited, get<1>(path_search));
+int Trax::checkVictory(vector<tuple<int,int>> listeA,BordColor couleur) {
+    
+    int resultat = -1;
+    for(int i =0; i < terrain.height;i++){
+        for(int j =0; j < terrain.width;j++){
+            if(terrain.getTuile(i,j) != nullptr){
+                tuple<int,int> premier = {i,j};
+                //liste.push_back(premier); 
+
+                vector<tuple<int,int>> nouveauL;
+                nouveauL.push_back(premier);
+                resultat = allerDirection(nouveauL,i,j,couleur);
+                return resultat;
+            }
         }
     }
-    */
+
+
+    return resultat;
+}
+
+
+
+int Trax::allerDirection(vector<tuple<int,int>> positionDejaParcourue,int i,int j,BordColor couleur){
+    int resultat = -1;
+    TuileTrax* tuile = terrain.getTuile(i,j);
+    tuple<int,int> position = {i,j};
+    positionDejaParcourue.push_back(position);   
+    resultat = deplacementBas(terrain,tuile,positionDejaParcourue,i,j,couleur);
+     
+    cout << "Resultat: " << resultat << endl; 
+    //if(resultat == -1){resultat = victoireParLigne(positionDejaParcourue);}
+    return resultat;
+}
+
+int Trax::verifierListe(vector<tuple<int,int>> liste, tuple<int,int> nouveau){
+    for(size_t i=0; i < liste.size();i++){
+        int listeA = std::get<0>(liste[i]);
+        int listeB = std::get<1>(liste[i]); 
+        int nouveauA = std::get<0>(nouveau);
+        int nouveauB = std::get<1>(nouveau);
+        //cout << listeA << "|" << listeB << "==" << nouveauA << "|" << nouveauB << endl;
+        if(listeA == nouveauA && listeB == nouveauB){
+            cout << "je boucle" << endl;
+            //cout << "A: " << listeA << " " << listeB <<  " B: " << nouveauA << " " << nouveauB << endl;
+            return 0;
+        }
+    }
+    return -1;
+    //return victoireParLigne(liste);
+}
+
+int Trax::victoireParLigne(vector<tuple<int,int>> liste){
+    bool depart = false;
+    bool arrive = false;
+
+    bool departX = false;
+    bool arriveX = false;
+
+    bool departY = false;
+    bool arriveY = false;
+
+    for(size_t i = 0; i < liste.size();i++){
+        tuple<int,int> x = liste[i];
+        int a  = std::get<0>(x);
+        int b = std::get<1>(x);
+
+        if(a == 0){/*cout << "departX == true" << endl; */departX = true;}
+        if(a == 7){/*cout << "arriveX == true" << endl;*/ arriveX = true;}
+        if(b == 0){/*cout << "departY == true" << endl;*/ departY = true;}
+        if(b == 7){/*cout << "arriveY == true" << endl;*/ arriveY = true;}
+
+    }
+
+    if(departX == true && arriveX == true){return 0;}
+    if(departY == true && arriveY == true){return 0;}
+
+
+    /*if(depart == true){ cout << "depart == true" << endl;}
+    if(arrive == true){ cout << "arrive == true" << endl;}
+    
+    if(depart == false || arrive == false){return -1;}
+    cout << "VICTOIRE PAR LIGNE " << endl; return 0; */
+
     return -1;
 }
+
+void Trax::printListe(vector<tuple<int,int>> liste){
+    string str = "";
+    for(size_t i = 0; i < liste.size();i++){
+        tuple<int,int> x = liste[i];
+        str += std::get<0>(x) + "|" + std::get<1>(x) ;
+        str += " ";
+    }
+    cout << str << endl;
+}
+
+
+int Trax::deplacement(Terrain<TuileTrax> terrain,TuileTrax *actuel,vector<tuple<int,int>> liste,int i,int j,BordColor couleur){
+    cout << "DeplacementHaut depuis " << i << "|" << j << endl;
+    int resultat = -1;
+    if(i > 0 && terrain.getTuile((i-1),j) != nullptr && resultat == -1){
+        //deplacement en haut
+        
+        TuileTrax *prochain = terrain.getTuile((i-1),j);
+       
+
+        if(prochain->bords[2] == actuel->bords[0] && couleur == actuel->bords[0]){
+            i--;
+            tuple<int,int> x = {i,j};
+            cout << "vers " << i << "|" << j << endl;
+            if(verifierListe(liste,x) ==0 ){return 0;}
+            liste.push_back(x);
+
+            cout <<"victoireParligne" << endl;
+            if(victoireParLigne(liste) == 0){return 0;}
+
+            resultat = deplacement(terrain,prochain,liste,i,j,couleur); 
+        }
+    }
+
+    if(j > 0 && terrain.getTuile(i,(j-1)) != nullptr && resultat == -1){
+        //deplacement à gauche
+        TuileTrax *prochain = terrain.getTuile(i,j-1);
+
+        if(prochain->bords[1] == actuel->bords[3] && couleur == actuel->bords[3]){    
+            j--;
+            tuple<int,int> x = {i,j};
+            cout << "vers " << i << "|" << j << endl;
+            if(verifierListe(liste,x) ==0 ){return 0;}
+            liste.push_back(x);
+
+            cout <<"victoireParligne" << endl;
+            if(victoireParLigne(liste) == 0){return 0;}
+            resultat = deplacementGauche(terrain,prochain,liste,i,j,couleur);
+        }
+    }
+
+    if(j < 8 && terrain.getTuile(i,(j+1)) != nullptr && resultat == -1){
+        //deplacement à droite
+        TuileTrax *prochain = terrain.getTuile(i,j+1);
+
+        if(prochain->bords[3] == actuel->bords[1] && couleur == actuel->bords[1]){
+            j++;
+            tuple<int,int> x = {i,j};
+            cout << "vers " << i << "|" << j << endl;
+            if(verifierListe(liste,x) ==0 ){return 0;}
+            liste.push_back(x);
+
+            cout <<"victoireParligne" << endl;
+            if(victoireParLigne(liste) == 0){return 0;}
+            resultat = deplacementDroite(terrain,prochain,liste,i,j,couleur);
+        }
+    }
+
+    return resultat;
+}
+
+int Trax::deplacementBas(Terrain<TuileTrax> terrain,TuileTrax *actuel,vector<tuple<int,int>> liste,int i,int j,BordColor couleur){
+    int resultat = -1;
+    cout << "DeplacementBas depuis " << i << "|" << j << endl;
+    
+    if(i < 8 && terrain.getTuile((i+1),j) != nullptr && resultat == -1 ){
+        //deplacement en bas
+        TuileTrax *prochain = terrain.getTuile((i+1),j);
+
+        if(prochain->bords[0] == actuel->bords[2] && couleur == actuel->bords[2]){
+            i++;
+            tuple<int,int> x = {i,j};
+            if(verifierListe(liste,x) ==0 ){return 0;}
+            liste.push_back(x);
+
+            cout <<"victoireParligne" << endl;
+            if(victoireParLigne(liste) == 0){return 0;}
+            cout << "vers " << i << "|" << j << endl;
+            resultat = deplacementBas(terrain,prochain,liste,i,j,couleur);
+        }
+    } 
+
+    if(j > 0 && terrain.getTuile(i,(j-1)) != nullptr && resultat == -1){
+        //deplacement à gauche
+        TuileTrax *prochain = terrain.getTuile(i,(j-1));
+
+        if(prochain->bords[1] == actuel->bords[3] && couleur == prochain->bords[1]){    
+            j--;
+            tuple<int,int> x = {i,j};
+            if(verifierListe(liste,x) ==0 ){return 0;}
+            liste.push_back(x);
+
+            cout <<"victoireParligne" << endl;
+            if(victoireParLigne(liste) == 0){return 0;}
+            cout << "vers " << i << "|" << j << endl;
+            resultat = deplacementGauche(terrain,prochain,liste,i,j,couleur);
+        }
+    }
+
+    if(j < 8 && terrain.getTuile(i,(j+1)) != nullptr && resultat == -1){
+        //deplacement à droite
+        TuileTrax *prochain = terrain.getTuile(i,(j+1));
+        //cout << (actuel->bords[0] == white) << "|" <<( actuel->bords[2] == white )<< endl;
+        
+        if(prochain->bords[3] == actuel->bords[1]  && couleur == prochain->bords[3] ){
+            j++;
+            tuple<int,int> x = {i,j};
+            if(verifierListe(liste,x) ==0 ){return 0;}
+            liste.push_back(x);
+
+            cout <<"victoireParligne" << endl;
+            if(victoireParLigne(liste) == 0){return 0;}
+            cout << "vers " << i << "|" << j << endl;
+            resultat = deplacementDroite(terrain,prochain,liste,i,j,couleur);
+        }
+    }
+
+    return resultat;
+}
+
+int Trax::deplacementDroite(Terrain<TuileTrax> terrain,TuileTrax *actuel,vector<tuple<int,int>> liste,int i,int j,BordColor couleur){
+    int resultat = -1;
+    cout << "DeplacementDroite depuis " << i << "|" << j << endl;
+    if(i > 0 && terrain.getTuile((i-1),j) != nullptr && resultat == -1){
+        //deplacement en haut
+        //on vérifie que le prochain n'est pas dans la liste (si le cas on boucle)
+        TuileTrax *prochain = terrain.getTuile((i-1),j);
+        //cout <<( prochain->bords[2] == actuel->bords[0] )<< endl;
+        
+
+        if(prochain->bords[2] == actuel->bords[0]  && couleur == actuel->bords[0]){
+            i--;
+            tuple<int,int> x = {i,j};
+            if(verifierListe(liste,x) ==0 ){return 0;}
+            liste.push_back(x);
+
+            cout <<"victoireParligne" << endl;
+            if(victoireParLigne(liste) == 0){return 0;}
+            cout << "vers " << i << "|" << j << endl;
+            resultat = deplacement(terrain,prochain,liste,i,j,couleur); 
+        }
+    }
+
+    if(i < 8 && terrain.getTuile((i+1),j) != nullptr && resultat == -1 ){
+        //deplacement en bas
+        TuileTrax *prochain = terrain.getTuile((i+1),j);
+
+        if(prochain->bords[0] == actuel->bords[2] && couleur == actuel->bords[2]){
+            i++;
+            tuple<int,int> x = {i,j};
+            if(verifierListe(liste,x) ==0 ){return 0;}
+            liste.push_back(x);
+
+            cout <<"victoireParligne" << endl;
+            if(victoireParLigne(liste) == 0){return 0;}
+            cout << "vers " << i << "|" << j << endl;
+            resultat = deplacementBas(terrain,prochain,liste,i,j,couleur);
+        }
+    } 
+
+    if(j < 8 && terrain.getTuile(i,(j+1)) != nullptr && resultat == -1){
+         //deplacement à droite
+        TuileTrax *prochain = terrain.getTuile(i,(j+1));
+
+        if(prochain->bords[3] == actuel->bords[1]  && couleur == actuel->bords[1]){
+            j++;
+            tuple<int,int> x = {i,j};
+            if(verifierListe(liste,x) ==0 ){return 0;}
+            liste.push_back(x);
+
+            cout <<"victoireParligne" << endl;
+            if(victoireParLigne(liste) == 0){return 0;}
+            cout << "vers " << i << "|" << j << endl;
+            resultat = deplacementDroite(terrain,prochain,liste,i,j,couleur);
+        }
+    }
+
+    return resultat;
+}
+
+int Trax::deplacementGauche(Terrain<TuileTrax> terrain,TuileTrax *actuel,vector<tuple<int,int>> liste,int i,int j,BordColor couleur){
+    int resultat = -1;
+    cout << "DeplacementDroite depuis " << i << "|" << j << endl;
+    if(i > 0 && terrain.getTuile((i-1),j) != nullptr && resultat == -1){
+        //deplacement en haut
+        //on vérifie que le prochain n'est pas dans la liste (si le cas on boucle)
+        TuileTrax *prochain = terrain.getTuile((i-1),j);
+        cout <<( prochain->bords[2] == actuel->bords[0] )<< endl;
+        
+
+        if(prochain->bords[2] == actuel->bords[0] && couleur == actuel->bords[0]){
+            i--;
+            tuple<int,int> x = {i,j};
+            if(verifierListe(liste,x) ==0 ){return 0;}
+            liste.push_back(x);
+            if(victoireParLigne(liste) == 0){return 0;}
+            cout << "vers " << i << "|" << j << endl;
+            resultat = deplacement(terrain,prochain,liste,i,j,couleur); 
+        }
+    }
+
+    if(i < 8 && terrain.getTuile((i+1),j) != nullptr && resultat == -1 ){
+        //deplacement en bas
+        TuileTrax *prochain = terrain.getTuile((i+1),j);
+
+        if(prochain->bords[0] == actuel->bords[2] && couleur == actuel->bords[2]){
+            i++;
+            tuple<int,int> x = {i,j};
+            if(verifierListe(liste,x) ==0 ){return 0;}
+            liste.push_back(x);
+            if(victoireParLigne(liste) == 0){return 0;}
+            cout << "vers " << i << "|" << j << endl;
+            resultat = deplacementBas(terrain,prochain,liste,i,j,couleur);
+        }
+    } 
+
+    if(j > 0 && terrain.getTuile(i,(j-1)) != nullptr && resultat == -1){
+        //deplacement à gauche
+        TuileTrax *prochain = terrain.getTuile(i,(j-1));
+
+        if(prochain->bords[1] == actuel->bords[3] && couleur == actuel->bords[3]){    
+            j--;
+            tuple<int,int> x = {i,j};
+            if(verifierListe(liste,x) ==0 ){return 0;}
+            liste.push_back(x);
+            if(victoireParLigne(liste) == 0){return 0;}
+            cout << "vers " << i << "|" << j << endl;
+            resultat = deplacementGauche(terrain,prochain,liste,i,j,couleur);
+        }
+    }
+
+    return resultat;
+}
+
 
 void Trax::start(){
     int victory = -1;
@@ -242,7 +539,7 @@ void Trax::start(){
 
     Text player_text;
     player_text.setFont(font);
-    player_text.setString("Joueur 1");
+    player_text.setString("Joueur Blanc");
     player_text.setFillColor(Color::Black);
     player_text.setCharacterSize(20);
     player_text.move(controller_start_x+(controller_width*0.25), 6);
@@ -256,12 +553,15 @@ void Trax::start(){
                 case Event::Closed:
                     app.close(); break;
                 case Event::MouseButtonPressed: {
-                    if (victory==-1 && event.mouseButton.button == sf::Mouse::Left) {
+                    if (event.mouseButton.button == sf::Mouse::Left) {
                         Vector2f mouse = app.mapPixelToCoords(Mouse::getPosition(app));
                         if(retour_bounds.contains(mouse)){
                             app.close();
                             openMenuPrincipal();
-                        } else if(turn_bounds.contains(mouse)){
+                        }
+                        if(victory != -1)
+                            break;
+                        if(turn_bounds.contains(mouse)){
                             pick->turn();
                         } else if(flip_bounds.contains(mouse)) {
                             if(pick->bords[0] == pick->bords[1] || pick->bords[1] == pick->bords[2]) {
@@ -279,14 +579,43 @@ void Trax::start(){
                             if(0 <= x && x < terrain.width && 0 <= y && y < terrain.height) {
                             
                                 if(placeTuile(y,x, pick)) {
-                                    doAllForcedPlays();
+                                    BordColor couleur;
+                                    vector<tuple<int,int>> liste;
+                                    doAllForcedPlays(liste);
                                     pick = new TuileTrax(defaultTuile);
                                     player = (player+1) %2;
 
                                     string player_str = player==0 ? "blanc" : "rouge";
                                     player_text.setString("Joueur " + player_str);
 
-                                    victory = checkVictory();
+                                    player == 0 ? couleur = white : couleur =  red;
+                                    victory = checkVictory(liste,couleur); // on regarde si le joueur qui pose gagne et après si l'autre gagne
+                                   if(victory == 0 && couleur == white){victory = 1;}     // 1 victoire blanche       
+                                    if(victory == 0 && couleur == red){victory = 2;}
+
+                                  /*if(victory == 0 && couleur == white){ // le joueur qui a jouer à t'il gagner ?
+                                        victory = 1;
+                                    }else if(victory == 0 && couleur == red){
+                                        victory = 2;
+                                    }else if(victory == -1){
+                                        if(couleur == white){
+                                            couleur = red;
+                                        }else{
+                                            couleur = white;
+                                        }
+                                        victory = checkVictory(liste,couleur); // le joueur qui n'a pas jouer à t'il gagner ?
+                                        if(victory == 0){
+                                            if(couleur == red){
+                                                victory  = 2;
+                                            }else if(couleur == white){
+                                                victory = 1;
+                                            }
+                                        }
+                                    } */
+
+
+                                    //faire animation Victoire et faire autre joueur
+                                    cout << "__________________" << endl;
                                 }
                            }
                         }
@@ -321,6 +650,19 @@ void Trax::start(){
 
         if(victory > -1) {
             // TODO victory
+            string winner_string ;
+            victory == 1 ? winner_string = "Joueur Blanc est gagnant" : winner_string = "Joueur Rouge est gagnant" ;
+            RectangleShape rect(Vector2f(controller_start_x*0.50, DRAW_HEIGHT*0.25));
+            rect.move(controller_start_x*0.25, DRAW_HEIGHT*0.40);
+            app.draw(rect);
+
+            Text text;
+            text.setFont(font);
+            text.setString(winner_string);
+            text.setCharacterSize(30);
+            text.setFillColor(Color::Black);
+            text.move(controller_start_x*0.3, DRAW_HEIGHT*0.44);
+            app.draw(text);
         }
         
         app.draw(retour_sprite);
