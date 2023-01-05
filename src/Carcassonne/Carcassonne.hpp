@@ -21,6 +21,7 @@ class Carcassonne {
         vector<TuileCarcassonne *> tuiles{};
         CarColor player = RED;
         vector<int> scores;
+        vector<int> nb_partisants;
         TuileCarcassonne* getRandomTuileCarcassonne();
         TuileCarcassonne * getTuile(int y, int x);
         bool tryPlaceTuile(int y, int x, TuileCarcassonne *tuile);

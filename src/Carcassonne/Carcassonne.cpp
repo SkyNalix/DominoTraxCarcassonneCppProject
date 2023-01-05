@@ -263,8 +263,10 @@ int getDistance(Vector2i start, Vector2i end) {
 void Carcassonne::start(){
 
     loadTiles();
-    for(int i =0; i < 4; i++ )
+    for(int i =0; i < 4; i++ ) {
         scores.push_back(0);
+        nb_partisants.push_back(5);
+    }
     bool victory = false;
 
     int DRAW_WIDTH = 900;
@@ -370,10 +372,10 @@ void Carcassonne::start(){
                         tiles_start_y--;
                     if(event.key.code == Keyboard::Down && tiles_start_y < 20-blocks_on_screen)
                         tiles_start_y++;
-                    if(event.key.code == Keyboard::PageDown || event.key.code == Keyboard::PageUp) {
-                        if(event.key.code == Keyboard::PageDown)
+                    if(event.key.code == Keyboard::A || event.key.code == Keyboard::Z) {
+                        if(event.key.code == Keyboard::A)
                             blocks_on_screen = min(blocks_on_screen+1, 20);
-                        if(event.key.code == Keyboard::PageUp)
+                        if(event.key.code == Keyboard::Z)
                             blocks_on_screen = max(3,blocks_on_screen-1);
                         block_length = controller_start_x/blocks_on_screen;
                         tilemapscale = ((float)block_length)/256.0 ;
@@ -402,11 +404,11 @@ void Carcassonne::start(){
                         if(victory)
                             break;
                         
-                        if(!placed_tuile && cross_bounds.contains(mouse)) {
+                        if(!partisant_placing && !placed_tuile && cross_bounds.contains(mouse)) {
                             pick = getRandomTuileCarcassonne();
                             pick_sprite.setTextureRect(tiles_rect[pick->tile]);
                             pick_sprite.setRotation(0); 
-                        } else if(placed_tuile && end_bounds.contains(mouse)) {
+                        } else if(!partisant_placing && placed_tuile && end_bounds.contains(mouse)) {
                             placed_tuile = false;
                             switch(player) {
                                 case RED: player = YELLOW; break;
@@ -427,11 +429,12 @@ void Carcassonne::start(){
                                         +carColorToString(player)+".png");
                                 partisant_sprite.setTexture(partisant_texture);
                             }
-                        } else if(!placed_tuile && turn_bounds.contains(mouse)){
+                        } else if(!partisant_placing && !placed_tuile && turn_bounds.contains(mouse)){
                             pick->turn();
                             pick_sprite.setRotation(90*pick->rotation);       
                         } else if(placed_tuile && partisant_bound.contains(mouse)) {
-                            partisant_placing = !partisant_placing;
+                            if(nb_partisants[player] > 0) 
+                                partisant_placing = !partisant_placing;
                         }
                         if(0 < mouse.x && mouse.x < DRAW_WIDTH-200 && 0 < mouse.y && mouse.y < DRAW_HEIGHT) {
 
@@ -469,6 +472,7 @@ void Carcassonne::start(){
                                     pick->bords[side].partisant = player;
                                     partisant_placing = false;
                                 }
+                                nb_partisants[player] = nb_partisants[player] -1; 
                             }
                         }
                     } 
