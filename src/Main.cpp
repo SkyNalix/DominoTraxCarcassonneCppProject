@@ -52,8 +52,14 @@ void openMenuPrincipal(){
                 if (event.mouseButton.button == sf::Mouse::Left) {
                         Vector2f mouse = app.mapPixelToCoords(Mouse::getPosition(app));
                         if (domino_bounds.contains(mouse)) {
+                            int h = 5;
+                            int w = 5;
+                            cout << "Quelle hauteur du plateau? " << endl; 
+                            cin >> h;
+                            cout << "Quelle largeur du plateau? " << endl;
+                            cin >> w;
                             app.close();
-                            DominoCarre c{5,5};
+                            DominoCarre c{h,w};
                             c.start();
                         } else if(trax_bounds.contains(mouse)){
                             app.close();
