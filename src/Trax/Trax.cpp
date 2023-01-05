@@ -170,7 +170,7 @@ int Trax::checkVictory(vector<tuple<int,int>> listeA,BordColor couleur) {
                 vector<tuple<int,int>> nouveauL;
                 nouveauL.push_back(premier);
                 resultat = allerDirection(nouveauL,i,j,couleur);
-                return resultat;
+                if(resultat == 0){return resultat;}
             }
         }
     }
@@ -239,7 +239,8 @@ int deplacementDroite(Terrain<TuileTrax> terrain,TuileTrax *actuel,vector<tuple<
             liste.push_back(x);
 
             if(victoireParLigne(liste) == 0){return 0;}
-            resultat = deplacement(terrain,prochain,liste,i,j,couleur); 
+            resultat = deplacement(terrain,prochain,liste,i,j,couleur);   
+            return resultat;
         }
     }
 
@@ -255,6 +256,7 @@ int deplacementDroite(Terrain<TuileTrax> terrain,TuileTrax *actuel,vector<tuple<
 
             if(victoireParLigne(liste) == 0){return 0;}
             resultat = deplacementBas(terrain,prochain,liste,i,j,couleur);
+            return resultat;
         }
     } 
 
@@ -270,6 +272,7 @@ int deplacementDroite(Terrain<TuileTrax> terrain,TuileTrax *actuel,vector<tuple<
 
             if(victoireParLigne(liste) == 0){return 0;}
             resultat = deplacementDroite(terrain,prochain,liste,i,j,couleur);
+            return resultat;
         }
     }
 
@@ -291,6 +294,7 @@ int deplacementGauche(Terrain<TuileTrax> terrain,TuileTrax *actuel,vector<tuple<
             liste.push_back(x);
             if(victoireParLigne(liste) == 0){return 0;}
             resultat = deplacement(terrain,prochain,liste,i,j,couleur); 
+            return resultat;
         }
     }
 
@@ -305,6 +309,7 @@ int deplacementGauche(Terrain<TuileTrax> terrain,TuileTrax *actuel,vector<tuple<
             liste.push_back(x);
             if(victoireParLigne(liste) == 0){return 0;}
             resultat = deplacementBas(terrain,prochain,liste,i,j,couleur);
+            return resultat;
         }
     } 
 
@@ -319,6 +324,7 @@ int deplacementGauche(Terrain<TuileTrax> terrain,TuileTrax *actuel,vector<tuple<
             liste.push_back(x);
             if(victoireParLigne(liste) == 0){return 0;}
             resultat = deplacementGauche(terrain,prochain,liste,i,j,couleur);
+            return resultat;
         }
     }
 
@@ -339,7 +345,8 @@ int deplacement(Terrain<TuileTrax> terrain,TuileTrax *actuel,vector<tuple<int,in
 
             if(victoireParLigne(liste) == 0){return 0;}
 
-            resultat = deplacement(terrain,prochain,liste,i,j,couleur); 
+            resultat = deplacement(terrain,prochain,liste,i,j,couleur);             
+            return resultat;
         }
     }
 
@@ -354,7 +361,8 @@ int deplacement(Terrain<TuileTrax> terrain,TuileTrax *actuel,vector<tuple<int,in
             liste.push_back(x);
 
             if(victoireParLigne(liste) == 0){return 0;}
-            resultat = deplacementGauche(terrain,prochain,liste,i,j,couleur);
+            resultat = deplacementGauche(terrain,prochain,liste,i,j,couleur);        
+            return resultat;
         }
     }
 
@@ -369,7 +377,8 @@ int deplacement(Terrain<TuileTrax> terrain,TuileTrax *actuel,vector<tuple<int,in
             liste.push_back(x);
 
             if(victoireParLigne(liste) == 0){return 0;}
-            resultat = deplacementDroite(terrain,prochain,liste,i,j,couleur);
+            resultat = deplacementDroite(terrain,prochain,liste,i,j,couleur);        
+            return resultat;
         }
     }
 
@@ -390,7 +399,8 @@ int deplacementBas(Terrain<TuileTrax> terrain,TuileTrax *actuel,vector<tuple<int
             liste.push_back(x);
 
             if(victoireParLigne(liste) == 0){return 0;}
-            resultat = deplacementBas(terrain,prochain,liste,i,j,couleur);
+            resultat = deplacementBas(terrain,prochain,liste,i,j,couleur);        
+            return resultat;
         }
     } 
 
@@ -405,7 +415,8 @@ int deplacementBas(Terrain<TuileTrax> terrain,TuileTrax *actuel,vector<tuple<int
             liste.push_back(x);
 
             if(victoireParLigne(liste) == 0){return 0;}
-            resultat = deplacementGauche(terrain,prochain,liste,i,j,couleur);
+            resultat = deplacementGauche(terrain,prochain,liste,i,j,couleur);        
+            return resultat;
         }
     }
 
@@ -420,7 +431,8 @@ int deplacementBas(Terrain<TuileTrax> terrain,TuileTrax *actuel,vector<tuple<int
             liste.push_back(x);
 
             if(victoireParLigne(liste) == 0){return 0;}
-            resultat = deplacementDroite(terrain,prochain,liste,i,j,couleur);
+            resultat = deplacementDroite(terrain,prochain,liste,i,j,couleur);        
+            return resultat;
         }
     }
 
@@ -535,29 +547,20 @@ void Trax::start(){
 
                                     player == 0 ? couleur = white : couleur =  red;
                                     victory = checkVictory(liste,couleur); // on regarde si le joueur qui pose gagne et après si l'autre gagne
-                                   if(victory == 0 && couleur == white){victory = 1;}     // 1 victoire blanche       
+                                    if(victory == 0 && couleur == white){victory = 1;} // 1 victoire blanche       
                                     if(victory == 0 && couleur == red){victory = 2;}
 
-                                  /*if(victory == 0 && couleur == white){ // le joueur qui a jouer à t'il gagner ?
-                                        victory = 1;
-                                    }else if(victory == 0 && couleur == red){
-                                        victory = 2;
-                                    }else if(victory == -1){
+                                    if(victory == -1){
                                         if(couleur == white){
                                             couleur = red;
                                         }else{
                                             couleur = white;
                                         }
-                                        victory = checkVictory(liste,couleur); // le joueur qui n'a pas jouer à t'il gagner ?
-                                        if(victory == 0){
-                                            if(couleur == red){
-                                                victory  = 2;
-                                            }else if(couleur == white){
-                                                victory = 1;
-                                            }
-                                        }
-                                    } */
-                                    //faire animation Victoire et faire autre joueur
+                                        victory = checkVictory(liste,couleur);            
+                                        if(victory == 0 && couleur == white){victory = 1;} // 1 victoire blanche       
+                                        if(victory == 0 && couleur == red){victory = 2;}
+                                    }
+
                                 }
                            }
                         }
