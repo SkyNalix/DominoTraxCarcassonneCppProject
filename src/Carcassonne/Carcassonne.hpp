@@ -13,14 +13,14 @@ using namespace std;
 
 class Carcassonne {
     public :
-        map<Tile, int> available_tiles{};
-        vector<TuileCarcassonne *> tuiles{};
-        CarColor player = RED;
-        vector<int> scores;
         Carcassonne();
         void start();
 
     private:
+        map<Tile, int> available_tiles{};
+        vector<TuileCarcassonne *> tuiles{};
+        CarColor player = RED;
+        vector<int> scores;
         TuileCarcassonne* getRandomTuileCarcassonne();
         TuileCarcassonne * getTuile(int y, int x);
         bool tryPlaceTuile(int y, int x, TuileCarcassonne *tuile);

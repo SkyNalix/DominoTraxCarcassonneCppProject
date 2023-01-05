@@ -11,14 +11,14 @@ using namespace std;
 
 class Trax{
     public :
-        int height = 8;
-        int width = 8; 
-        Terrain<TuileTrax> terrain{8,8};
-        int player = 0;
         Trax();
         void start();
 
     private:
+        int height = 8;
+        int width = 8; 
+        Terrain<TuileTrax> terrain{8,8};
+        int player = 0;
         bool tryPlaceTuile(int y, int x, TuileTrax *tuile);
         vector<vector<bool>> getPossiblePlacements(TuileTrax *tuile);
         bool placeTuile(int y, int x, TuileTrax* tuile);

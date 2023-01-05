@@ -10,6 +10,10 @@ using namespace std;
 
 class DominoCarre {
     public:
+        DominoCarre(int h, int w);
+        void start();
+
+    private:
         int height;
         int width;
         Terrain<TuileDomino> terrain;
@@ -17,8 +21,6 @@ class DominoCarre {
         int score1 = 0;
         int score2 = 0;
         int bag;
-        DominoCarre(int h, int w);
-        void start();
         int tryPlaceTuile(int y, int x, TuileDomino *tuile);
         vector<vector<int>> getPossiblePlacements(TuileDomino *tuile);
         int placeTuile(int y, int x, TuileDomino* tuile);
