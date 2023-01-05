@@ -108,7 +108,7 @@ Tile_Bord simplifyTileBord(Tile_Bord b1) {
     switch(b1) {
         case SOLO_CITY: case PROT_CITY: return CITY; break;
         case START_PATH: return PATH; break;
-        case ABBEY: return PATH; break;
+        case ABBEY: return GRASS; break;
         default: return b1;
     }
     return b1;
@@ -192,71 +192,69 @@ void Carcassonne::closeApp(RenderWindow *app) {
 // tuile = tuile courante
 // bord = quelle partie je regarde : ville, chemin...
 // direction = là d'où je suis arrivé
-// retourne couple (score, partisant trouvé);
-tuple <int, CarColor> Carcassonne::calculScore_rec(TuileCarcassonne *tuile, int score, 
-                    Tile_Bord bord, Direction direction) {
+// retourne le score
+int Carcassonne::calculScore_rec(TuileCarcassonne *tuile, Tile_Bord bord, Direction direction) {
     if(tuile == nullptr || tuile->bords[direction].marque || bord != simplifyTileBord(tuile->bords[direction].tile))
-        return make_tuple(score, NONE);
+        return 0;
 
-    tuple <int, CarColor> res;
-    CarColor partisant = tuile->bords[direction].partisant;
-
+    int score = 0;
     tuile->bords[direction].marque = true;
     Tile_Bord direction_bord = tuile->bords[direction].tile;
     Tile_Bord simpl_direction_bord = simplifyTileBord(direction_bord);
 
     score += simpl_direction_bord == CITY ? 2 : 1;
     if(direction_bord == SOLO_CITY || direction_bord == START_PATH || direction_bord == ABBEY){
-        return make_tuple(score, tuile->bords[direction].partisant);
+        return score;
     }
     if(direction != TOP && simplifyTileBord(tuile->bords[TOP].tile) == bord) {
-        tuple <int, CarColor> res_top = calculScore_rec(getTuile(tuile->y-1,tuile->x),score,bord,BOTTOM);
-        if( get<1>(res_top) != NONE) 
-            partisant = get<1>(res_top);
+        int score_top = 1 + calculScore_rec(getTuile(tuile->y-1,tuile->x),bord,BOTTOM);
         tuile->bords[TOP].marque = true;
-        score += get<0>(res_top) + bord == CITY ? 2 : 1;
+        score += score_top + (bord == CITY ? 2 : 1);
     }
     if(direction != BOTTOM && simplifyTileBord(tuile->bords[BOTTOM].tile) == bord) {
-        tuple <int, CarColor> res_bottom = calculScore_rec(getTuile(tuile->y+1,tuile->x),score,bord,TOP);
-        if( get<1>(res_bottom) != NONE) 
-            partisant = get<1>(res_bottom);
+        int score_bottom = 1 + calculScore_rec(getTuile(tuile->y+1,tuile->x),bord,TOP);
         tuile->bords[BOTTOM].marque = true;
-        score += get<0>(res_bottom) + bord == CITY ? 2 : 1;
+        score += score_bottom + (bord == CITY ? 2 : 1);
     }
     if(direction != RIGHT && simplifyTileBord(tuile->bords[RIGHT].tile) == bord) {
-        tuple <int, CarColor> res_right = calculScore_rec(getTuile(tuile->y,tuile->x+1),score,bord,LEFT);
-        if( get<1>(res_right) != NONE) 
-            partisant = get<1>(res_right);
+        int score_right = 1 + calculScore_rec(getTuile(tuile->y,tuile->x+1),bord,LEFT);
         tuile->bords[RIGHT].marque = true;
-        score += get<0>(res_right) + bord == CITY ? 2 : 1 ;
+        score += score_right + (bord == CITY ? 2 : 1);
     }
     if(direction != LEFT && simplifyTileBord(tuile->bords[LEFT].tile) == bord) {
-        tuple <int, CarColor> res_left = calculScore_rec(getTuile(tuile->y,tuile->x+1),score,bord,RIGHT);
-        if( get<1>(res_left) != NONE) 
-            partisant = get<1>(res_left);
+        int score_left = 1 + calculScore_rec(getTuile(tuile->y,tuile->x+1),bord,RIGHT);
         tuile->bords[LEFT].marque = true;
-        score += get<0>(res_left) + bord == CITY ? 2 : 1;
+        score += score_left + (bord == CITY ? 2 : 1);
     }
-    return make_tuple(score,partisant);
+    return score;
 }
 
 void Carcassonne::calculScore(int y, int x, TuileCarcassonne *tuile) {
 
-    for(int i = 0; i<4; i++)
-        tuile->bords[i].marque = true;
-
-    tuple <int, CarColor> res_top = calculScore_rec(getTuile(y-1,x), 1, 
-                                    simplifyTileBord(tuile->bords[TOP].tile), BOTTOM);
-    if(get<1>(res_top)!=NONE) scores[get<1>(res_top)] += get<0>(res_top);
-    tuple <int, CarColor> res_bottom = calculScore_rec(getTuile(y+1,x), 1, 
-                                    simplifyTileBord(tuile->bords[BOTTOM].tile), TOP);
-    if(get<1>(res_bottom)!=NONE) scores[get<1>(res_bottom)] += get<0>(res_bottom);
-    tuple <int, CarColor> res_right = calculScore_rec(getTuile(y,x+1), 1, 
-                                    simplifyTileBord(tuile->bords[RIGHT].tile), LEFT);
-    if(get<1>(res_right) != NONE) scores[get<1>(res_right)] += get<0>(res_right);
-    tuple <int, CarColor> res_left = calculScore_rec(getTuile(y,x-1), 1, 
-                                    simplifyTileBord(tuile->bords[LEFT].tile), RIGHT);
-    if(get<1>(res_left)!=NONE) scores[get<1>(res_left)] += get<0>(res_left);
+    if(tuile->bords[TOP].partisant != NONE) {
+        tuile->bords[TOP].marque = true;
+       int res_top = calculScore_rec(getTuile(y-1,x),  
+                                simplifyTileBord(tuile->bords[TOP].tile), BOTTOM);
+        scores[tuile->bords[TOP].partisant] = res_top + 1;
+    }
+    if(tuile->bords[BOTTOM].partisant != NONE) {
+        tuile->bords[BOTTOM].marque = true;
+        int score_bottom = calculScore_rec(getTuile(y+1,x), 
+                                simplifyTileBord(tuile->bords[BOTTOM].tile), TOP);
+        scores[tuile->bords[BOTTOM].partisant] = score_bottom + 1;
+    }
+    if(tuile->bords[RIGHT].partisant != NONE) {
+        tuile->bords[RIGHT].marque = true;
+        int score_right = calculScore_rec(getTuile(y,x+1), 
+                                simplifyTileBord(tuile->bords[RIGHT].tile), LEFT);
+        scores[tuile->bords[RIGHT].partisant] = score_right + 1;
+    }
+    if(tuile->bords[LEFT].partisant != NONE) {
+        tuile->bords[LEFT].marque = true;
+        int scores_left = calculScore_rec(getTuile(y,x-1), 
+                                simplifyTileBord(tuile->bords[LEFT].tile), RIGHT);
+        scores[tuile->bords[LEFT].partisant] = scores_left + 1;
+    }
 }
 
 
@@ -386,7 +384,6 @@ void Carcassonne::start(){
                 }
                 case Event::MouseButtonPressed: {
                     if (event.mouseButton.button == sf::Mouse::Right) {
-                        victory = true;
                         for(size_t i = 0; i < tuiles.size(); i++)
                             for(int j = 0; j<4; j++) 
                                 tuiles[i]->bords[j].marque = false;
@@ -397,7 +394,6 @@ void Carcassonne::start(){
                             << carColorToString(YELLOW) << ": " << scores[YELLOW] << "\n\t"
                             << carColorToString(BLUE) << ": " << scores[BLUE] << "\n\t"
                             << carColorToString(GREEN) << ": " << scores[GREEN] << "\n";
-                        calcul_done = true;
                     } else
                     if (event.mouseButton.button == sf::Mouse::Left) {
                         Vector2f mouse = app.mapPixelToCoords(Mouse::getPosition(app));

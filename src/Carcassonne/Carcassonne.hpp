@@ -25,7 +25,7 @@ class Carcassonne {
         TuileCarcassonne * getTuile(int y, int x);
         bool tryPlaceTuile(int y, int x, TuileCarcassonne *tuile);
         bool placeTuile(int y, int x, TuileCarcassonne* tuile);
-        tuple <int, CarColor> calculScore_rec(TuileCarcassonne *tuile, int score, Tile_Bord bord, Direction direction);
+        int calculScore_rec(TuileCarcassonne *tuile, Tile_Bord bord, Direction direction);
         void calculScore(int y, int x, TuileCarcassonne *tuile);
         void closeApp(RenderWindow* app);
 };
