@@ -5,6 +5,8 @@
 #include <vector>
 #include <SFML/Graphics.hpp>
 
+#include "Common.hpp"
+
 using namespace std;
 using namespace sf;
 
@@ -37,9 +39,6 @@ enum Tile {
 
 enum Tile_Bord {
     GRASS, PATH, START_PATH, ABBEY, CITY, PROT_CITY, SOLO_CITY 
-};
-enum Direction {
-    TOP = 0, RIGHT = 1, BOTTOM = 2, LEFT = 3 
 };
 
 

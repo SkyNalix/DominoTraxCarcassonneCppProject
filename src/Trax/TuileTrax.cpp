@@ -33,9 +33,9 @@ void TuileTrax::draw(RenderWindow *app, int start_x, int start_y, int ZONE_WIDTH
 }
 
 void TuileTrax::turn() {
-    BordColor tmp = bords[3];
-    bords[3] = bords[2];
-    bords[2] = bords[1];
-    bords[1] = bords[0];
-    bords[0] = tmp;
+    BordColor tmp = bords[LEFT];
+    bords[LEFT] = bords[BOTTOM];
+    bords[BOTTOM] = bords[RIGHT];
+    bords[RIGHT] = bords[TOP];
+    bords[TOP] = tmp;
 }

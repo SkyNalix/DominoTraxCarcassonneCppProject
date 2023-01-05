@@ -2,7 +2,8 @@
 #include "Main.hpp"
 
 
-
+static int domino_carre_h = 5;
+static int domino_carre_w = 5;
 
 void openMenuPrincipal(){
 
@@ -10,7 +11,7 @@ void openMenuPrincipal(){
     font.loadFromFile("./resources/arial.ttf");
     Text text;
     text.setFont(font);
-    text.setString(" Menu ");
+    text.setString("Projet Langage Objet Avance");
     text.setCharacterSize(50);
     text.setFillColor(Color::Red);
 
@@ -53,11 +54,11 @@ void openMenuPrincipal(){
                         Vector2f mouse = app.mapPixelToCoords(Mouse::getPosition(app));
                         if (domino_bounds.contains(mouse)) {
                             app.close();
-                            DominoCarre c{5,5};
+                            DominoCarre c{domino_carre_h,domino_carre_w};
                             c.start();
                         } else if(trax_bounds.contains(mouse)){
                             app.close();
-                            Trax c{1};
+                            Trax c{};
                             c.start();
                         } else if(carcassonne_bounds.contains(mouse)){
                             app.close();
@@ -78,8 +79,16 @@ void openMenuPrincipal(){
 
 
 
-int main() {
+int main(int argc, char *argv[]) {
     srand(time(NULL));
+
+    if(argc >= 2) {
+        domino_carre_h = stoi(argv[1]);
+        domino_carre_w = stoi(argv[2]);
+        if(domino_carre_h < 5) domino_carre_h = 5;
+        if(domino_carre_w < 5) domino_carre_w = 5;
+    }
+
     openMenuPrincipal();
     return EXIT_SUCCESS;
 }
