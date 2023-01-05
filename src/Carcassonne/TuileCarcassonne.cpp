@@ -27,9 +27,9 @@ void TuileCarcassonne::initBords(vector<Tile_Bord> v) {
 
 void TuileCarcassonne::turn() {
     rotation = (rotation+1)%4;
-    BordCarcassonne tmp = bords[3];
-    bords[3] = bords[2];
-    bords[2] = bords[1];
-    bords[1] = bords[0];
-    bords[0] = tmp;
+    BordCarcassonne tmp = bords[LEFT];
+    bords[LEFT] = bords[BOTTOM];
+    bords[BOTTOM] = bords[RIGHT];
+    bords[RIGHT] = bords[TOP];
+    bords[TOP] = tmp;
 }

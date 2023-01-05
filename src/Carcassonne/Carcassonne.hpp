@@ -27,7 +27,6 @@ class Carcassonne {
         bool placeTuile(int y, int x, TuileCarcassonne* tuile);
         int calculScore_rec(TuileCarcassonne *tuile, Tile_Bord bord, Direction direction);
         void calculScore(int y, int x, TuileCarcassonne *tuile);
-        void closeApp(RenderWindow* app);
 };
 
 

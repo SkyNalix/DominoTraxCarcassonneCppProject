@@ -120,9 +120,9 @@ vector<int> invert_vector(vector<int> v) {
 } 
 
 void TuileDomino::turn() {
-    vector<int> tmp = bords[3];
-    bords[3] = bords[2];
-    bords[2] = invert_vector(bords[1]);
-    bords[1] = bords[0];
-    bords[0] = invert_vector(tmp);
+    vector<int> tmp = bords[LEFT];
+    bords[LEFT] = bords[BOTTOM];
+    bords[BOTTOM] = invert_vector(bords[RIGHT]);
+    bords[RIGHT] = bords[TOP];
+    bords[TOP] = invert_vector(tmp);
 }

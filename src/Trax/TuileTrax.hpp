@@ -5,6 +5,9 @@
 #include <vector>
 #include <SFML/Graphics.hpp>
 
+
+#include "Common.hpp"
+
 using namespace std;
 using namespace sf;
 

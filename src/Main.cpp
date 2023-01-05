@@ -57,7 +57,7 @@ void openMenuPrincipal(){
                             c.start();
                         } else if(trax_bounds.contains(mouse)){
                             app.close();
-                            Trax c{1};
+                            Trax c{};
                             c.start();
                         } else if(carcassonne_bounds.contains(mouse)){
                             app.close();

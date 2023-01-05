@@ -15,7 +15,7 @@ class Trax{
         int width = 8; 
         Terrain<TuileTrax> terrain{8,8};
         int player = 0;
-        Trax(int p);
+        Trax();
         void start();
 
     private:
@@ -25,24 +25,15 @@ class Trax{
         void doAllForcedPlays(vector<tuple<int,int>> liste);
         void angleForcedPlays(int y, int x);
         void lineForcedPlays(int y, int x);
+
         tuple <bool, vector<tuple<int, TuileTrax *>>> checkVictoryOnPath(
                 vector<tuple<int, TuileTrax *>> visited,
                 int player,
                 tuple<int, TuileTrax *> current
             );
         int checkVictory(vector<tuple<int,int>> listeA,BordColor couleur);
-        int allerDirection(vector<tuple<int,int>> positionDejaParcourue,int i,int j,BordColor couleur);
-        int verifierListe(vector<tuple<int,int>> liste, tuple<int,int> nouveau);
         int victoireParLigne(vector<tuple<int,int>> liste);
-        
-        void printListe(vector<tuple<int,int>> liste);
-
-        int deplacement(Terrain<TuileTrax> terrain,TuileTrax *actuel,vector<tuple<int,int>> liste,int i,int j,BordColor couleur);
-        int deplacementBas(Terrain<TuileTrax> terrain,TuileTrax *actuel,vector<tuple<int,int>> liste,int i,int j,BordColor couleur);
-        int deplacementDroite(Terrain<TuileTrax> terrain,TuileTrax *actuel,vector<tuple<int,int>> liste,int i,int j,BordColor couleur);
-        int deplacementGauche(Terrain<TuileTrax> terrain,TuileTrax *actuel,vector<tuple<int,int>> liste,int i,int j,BordColor couleur);
-
-
+        int allerDirection(vector<tuple<int,int>> positionDejaParcourue,int i,int j,BordColor couleur);
 };
 
 #endif

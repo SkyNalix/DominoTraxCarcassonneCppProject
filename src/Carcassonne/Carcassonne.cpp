@@ -138,20 +138,20 @@ bool Carcassonne::tryPlaceTuile(int y, int x, TuileCarcassonne *tuile) {
         }
     }
     if(right != nullptr) {
-        if( simplifyTileBord(right->bords[3].tile)
+        if( simplifyTileBord(right->bords[LEFT].tile)
                         != simplifyTileBord(tuile->bords[1].tile)) {
             return false;
         }
     }
     if(bottom != nullptr) {
 
-        if( simplifyTileBord(bottom->bords[0].tile)
+        if( simplifyTileBord(bottom->bords[TOP].tile)
                         != simplifyTileBord(tuile->bords[2].tile)) {
             return false;
         }
     }
     if(left != nullptr) {
-        if( simplifyTileBord(left->bords[1].tile)
+        if( simplifyTileBord(left->bords[RIGHT].tile)
                         != simplifyTileBord(tuile->bords[3].tile)) {
             return false;
         }
@@ -170,10 +170,6 @@ bool Carcassonne::placeTuile(int y, int x, TuileCarcassonne* tuile) {
     return true;
 }
 
-void Carcassonne::closeApp(RenderWindow *app) {
-    app->close();
-    openMenuPrincipal();
-}
 
 
 
@@ -362,7 +358,9 @@ void Carcassonne::start(){
         while (app.pollEvent(event)){
             switch (event.type) {
                 case Event::Closed:
-                    closeApp(&app); break;
+                    app.close();
+                    openMenuPrincipal();
+                     break;
                 case Event::KeyPressed : {
                     if(event.key.code == Keyboard::Left && tiles_start_x > -20)
                         tiles_start_x--;
@@ -398,7 +396,8 @@ void Carcassonne::start(){
                     if (event.mouseButton.button == sf::Mouse::Left) {
                         Vector2f mouse = app.mapPixelToCoords(Mouse::getPosition(app));
                         if(retour_bounds.contains(mouse)){
-                            closeApp(&app);
+                            app.close();
+                            openMenuPrincipal();
                         }
                         if(victory)
                             break;

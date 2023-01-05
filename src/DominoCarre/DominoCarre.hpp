@@ -4,6 +4,7 @@
 #include "Terrain.hpp"
 #include "Main.hpp"
 #include "TuileDomino.hpp"
+#include "Common.hpp"
 using namespace sf;
 using namespace std;
 
@@ -18,12 +19,9 @@ class DominoCarre {
         int bag;
         DominoCarre(int h, int w);
         void start();
-        
         int tryPlaceTuile(int y, int x, TuileDomino *tuile);
         vector<vector<int>> getPossiblePlacements(TuileDomino *tuile);
         int placeTuile(int y, int x, TuileDomino* tuile);
-
 };
-int calculPoints(vector<int> bord1, vector<int> bord2);
 
 #endif
