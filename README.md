@@ -1,8 +1,8 @@
-# Projet de programmation en C++ pour l'UE Langage Objet Avancé année 2022-2023
+# Projet de programmation en C++ pour l'UE Langage Objet Avancé année 2022-2023 de Master en Informatique
 
 ## Projet realisé par: (nom, prenom, n° etudiant)  
-    - Tazouev Arbi, 21957896  
-    - Guinet Virgile, 21952934  
+    - Tazouev Arbi  
+    - Guinet Virgile
 
 ## Compilation:  
     Dans la racine du projet, tapez: `make`  
